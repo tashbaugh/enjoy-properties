@@ -52,40 +52,62 @@ export default function ContactForm({ source, contactType, sourceDetail, tags }:
     if (!leadError) trackLeadConversion(contactType);
   }
 
+  const inputClasses =
+    'w-full rounded-lg border border-line bg-white px-4 py-2.5 text-ink placeholder:text-ink-soft/50 outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/30';
+  const labelClasses = 'text-xs font-semibold uppercase tracking-wide text-ink-soft';
+
   if (status === 'done') {
-    return <p className="text-green-700 font-medium">Thanks — I'll be in touch shortly.</p>;
+    return (
+      <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-green-800">
+        <p className="font-medium">Thanks — I&apos;ll be in touch shortly.</p>
+      </div>
+    );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-sm">
-      <input
-        required
-        placeholder="Name"
-        className="border rounded px-3 py-2"
-        value={form.name}
-        onChange={(e) => setForm({ ...form, name: e.target.value })}
-      />
-      <input
-        required
-        type="email"
-        placeholder="Email"
-        className="border rounded px-3 py-2"
-        value={form.email}
-        onChange={(e) => setForm({ ...form, email: e.target.value })}
-      />
-      <input
-        placeholder="Phone (optional)"
-        className="border rounded px-3 py-2"
-        value={form.phone}
-        onChange={(e) => setForm({ ...form, phone: e.target.value })}
-      />
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="name" className={labelClasses}>Name</label>
+        <input
+          id="name"
+          required
+          placeholder="Jane Doe"
+          className={inputClasses}
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="email" className={labelClasses}>Email</label>
+        <input
+          id="email"
+          required
+          type="email"
+          placeholder="jane@email.com"
+          className={inputClasses}
+          value={form.email}
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+        />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="phone" className={labelClasses}>Phone (optional)</label>
+        <input
+          id="phone"
+          placeholder="(210) 555-0100"
+          className={inputClasses}
+          value={form.phone}
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
+        />
+      </div>
       <button
         disabled={status === 'submitting'}
-        className="bg-black text-white rounded px-4 py-2 disabled:opacity-50"
+        className="mt-2 w-full rounded-lg bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-gold disabled:cursor-not-allowed disabled:opacity-50"
       >
         {status === 'submitting' ? 'Sending...' : 'Get in touch'}
       </button>
-      {status === 'error' && <p className="text-red-600 text-sm">Something went wrong — try again.</p>}
+      {status === 'error' && (
+        <p className="text-sm text-red-600">Something went wrong — try again.</p>
+      )}
     </form>
   );
 }
