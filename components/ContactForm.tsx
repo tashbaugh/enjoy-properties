@@ -34,7 +34,7 @@ export default function ContactForm({ source, contactType, sourceDetail, tags }:
         contact_type: contactType,
         tags: tags ?? null,
       })
-      .select()
+      .select('id')
       .single();
 
     if (contactError || !contact) {
