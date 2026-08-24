@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import ContactForm from '@/components/ContactForm';
 
 const TRUST_POINTS = [
@@ -13,7 +14,20 @@ export default function Home() {
       <section id="buy" className="scroll-mt-20 bg-paper">
         <div className="mx-auto grid max-w-6xl gap-12 px-4 py-20 md:grid-cols-2 md:items-center md:py-28">
           <div>
-            <h1 className="font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/tyler-headshot.jpg"
+                alt="Tyler Ashbaugh"
+                width={56}
+                height={56}
+                className="h-14 w-14 rounded-full object-cover ring-2 ring-white shadow-sm"
+              />
+              <div>
+                <p className="text-sm font-semibold text-ink">Tyler Ashbaugh</p>
+                <p className="text-xs text-ink-soft">REALTOR® · Texas Premier Realty</p>
+              </div>
+            </div>
+            <h1 className="mt-6 font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
               San Antonio Real Estate, Done Right
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-ink-soft">
