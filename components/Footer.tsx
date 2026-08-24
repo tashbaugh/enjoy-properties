@@ -1,6 +1,26 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+function EqualHousingIcon() {
+  return (
+    <svg
+      viewBox="0 0 36 36"
+      width="20"
+      height="20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      aria-hidden="true"
+      className="shrink-0 text-paper/70"
+    >
+      <circle cx="18" cy="18" r="16.5" />
+      <path d="M9 17 L18 9 L27 17" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M11.5 15.5 V26 H24.5 V15.5" strokeLinejoin="round" />
+      <path d="M16 26 V20 H20 V26" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export default function Footer() {
   return (
     <footer className="border-t border-line bg-ink text-paper">
@@ -38,6 +58,13 @@ export default function Footer() {
           />
           <p className="text-sm font-medium text-paper/90">
             Tyler Ashbaugh, REALTOR® | Texas Premier Realty, LLC | TREC Lic. #833862-SA
+          </p>
+        </div>
+        <div className="mt-3 flex flex-col items-center justify-center gap-1.5 text-center sm:flex-row sm:gap-2">
+          <EqualHousingIcon />
+          <p className="text-xs text-paper/60">
+            Tyler Ashbaugh is committed to compliance with all federal, state, and local fair
+            housing laws. Equal Housing Opportunity.
           </p>
         </div>
         <p className="mt-4 text-center text-xs text-paper/40">
