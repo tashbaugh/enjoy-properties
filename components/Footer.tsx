@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Footer() {
@@ -21,12 +22,27 @@ export default function Footer() {
         </div>
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-paper/50">Contact</p>
-          <p className="mt-3 text-sm text-paper/80">[Your phone / email]</p>
+          <p className="mt-3 text-sm text-paper/80">
+            <a href="tel:+12104192016" className="hover:text-gold">210-419-2016</a>
+          </p>
         </div>
       </div>
-      <div className="border-t border-paper/10 px-4 py-6 text-center text-xs text-paper/50">
-        {/* TREC broker identification goes here once sponsorship is finalized — see build plan compliance note */}
-        © {new Date().getFullYear()} Enjoy Properties.
+      <div className="border-t border-paper/10 px-4 py-6">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 text-center sm:flex-row sm:justify-center sm:text-left">
+          <Image
+            src="/tpr-logo.png"
+            alt="Texas Premier Realty, LLC"
+            width={140}
+            height={46}
+            className="h-8 w-auto rounded bg-paper px-2 py-1"
+          />
+          <p className="text-sm font-medium text-paper/90">
+            Tyler Ashbaugh, REALTOR® | Texas Premier Realty, LLC | TREC Lic. #833862-SA
+          </p>
+        </div>
+        <p className="mt-4 text-center text-xs text-paper/40">
+          © {new Date().getFullYear()} Enjoy Properties.
+        </p>
       </div>
     </footer>
   );

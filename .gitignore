@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# personal documents with PII (home address, etc.) — keep local only
+docs/TREC-license-833862-SA.pdf
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
