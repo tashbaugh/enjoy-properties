@@ -9,7 +9,9 @@ export default function Invest() {
             San Antonio Investment Properties
           </h1>
           <p className="mt-6 text-lg leading-relaxed text-ink-soft">
-            [Cash flow / cap rate framing — real numbers, not sales pitch]
+            Cash flow and cap rate, not just curb appeal. I evaluate every investment property
+            with the same rigor I&apos;d bring to any engineering problem — real numbers, honest
+            projections, no hype. This page (and the tools on it) reflect that approach.
           </p>
         </div>
         <div className="rounded-2xl border border-line bg-white p-6 shadow-sm sm:p-8">
