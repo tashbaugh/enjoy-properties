@@ -1,9 +1,9 @@
 import ContactForm from '@/components/ContactForm';
 
 const TRUST_POINTS = [
-  '[Years licensed / experience]',
-  '[Specialty or differentiator]',
-  '[Certifications or designations]',
+  '20+ years of analytical, technical problem-solving — now applied to real estate',
+  'Residential buyers, sellers & renters — San Antonio & surrounding areas',
+  'Licensed Texas REALTOR® — TREC Lic. #833862-SA, held to the REALTOR® Code of Ethics',
 ];
 
 export default function Home() {
@@ -17,7 +17,10 @@ export default function Home() {
               San Antonio Real Estate, Done Right
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-ink-soft">
-              [Your bio — licensed agent, background, what makes you different]
+              I&apos;m Tyler Ashbaugh, a licensed Texas REALTOR® with Texas Premier Realty.
+              Before real estate, I spent 20+ years as a software engineer — and I bring that
+              same analytical, no-nonsense approach to helping you buy, sell, or lease in San
+              Antonio. No pressure, no fluff, just clear numbers and honest guidance.
             </p>
             <ul className="mt-8 space-y-3">
               {TRUST_POINTS.map((point) => (
