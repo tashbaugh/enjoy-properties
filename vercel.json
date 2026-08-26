@@ -1,0 +1,5 @@
+{
+  "crons": [
+    { "path": "/api/cron/update-mortgage-rate", "schedule": "0 14 * * 5" }
+  ]
+}

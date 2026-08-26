@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { captureUtmParams, buildSourceDetail, resolveContactSource } from '@/lib/utm';
 import { trackLeadConversion } from '@/lib/analytics';
@@ -123,8 +123,29 @@ export default function CashFlowCalculator() {
   const [gateForm, setGateForm] = useState({ name: '', email: '' });
   const [status, setStatus] = useState<'idle' | 'submitting' | 'unlocked' | 'error'>('idle');
 
+  // True once the visitor touches the interest rate field themselves --
+  // guards the /api/mortgage-rate fetch below from clobbering an edit
+  // that happens to land during the brief fetch window.
+  const userEditedRate = useRef(false);
+
   useEffect(() => {
     captureUtmParams();
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/mortgage-rate')
+      .then((res) => res.json())
+      .then((data: { rate: number | null }) => {
+        // data.rate is already a percent (e.g. 6.65, not 0.0665) -- same
+        // shape the form field displays, just rounded to 1 decimal.
+        if (typeof data.rate === 'number' && !userEditedRate.current) {
+          setField('interestRate', String(Math.round(data.rate * 10) / 10));
+        }
+      })
+      .catch(() => {
+        // Network/API failure -- silently keep the static DEFAULT_INPUTS
+        // fallback already in INITIAL_FORM, per spec §6.
+      });
   }, []);
 
   const inputs = useMemo(() => toCalculatorInputs(form), [form]);
@@ -224,7 +245,10 @@ export default function CashFlowCalculator() {
           label="Interest rate"
           suffix="%"
           value={form.interestRate}
-          onChange={(v) => setField('interestRate', v)}
+          onChange={(v) => {
+            userEditedRate.current = true;
+            setField('interestRate', v);
+          }}
         />
         <NumberField
           label="Loan term"
