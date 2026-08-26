@@ -111,7 +111,48 @@ alter table leads
 - Email capture step reuses the existing Supabase insert pattern from `ContactForm` (client-side insert, no API route needed at this scale) — but as its own small component or an extended mode of `ContactForm`, since it needs to also write `calculator_inputs`/`calculator_results` and unlock the results panel post-insert rather than showing a generic "thanks" state.
 - `trackLeadConversion()` fires immediately after the Supabase insert succeeds, matching the rest of the site's conversion definition (fires once, post-confirmed-write, not on click or form-start).
 
-## 6. Explicitly out of scope for this phase
+## 6. Interest rate auto-update — FRED API via Vercel Cron
+
+The 7.0% interest rate default will go stale silently if left hardcoded. Fix this with a scheduled fetch rather than a manual reminder — decoupled from Phase 3/n8n entirely, since n8n isn't live yet and this doesn't need to wait for it.
+
+**Status as of the initial calculator build (Aug 2026): not implemented.** The shipped version uses a static hardcoded default (6.6%, the mid-6% national average at build time per a one-off web search) — this section wasn't part of the spec handed off for that build pass.
+
+**Source:** FRED (Federal Reserve Economic Data) API, series `MORTGAGE30US` — the Freddie Mac Primary Mortgage Market Survey 30-year fixed rate, released weekly (Thursdays). Free API key, no cost, simple REST/JSON.
+
+**Schema:** one small table, not a new column on `leads`:
+```sql
+create table site_config (
+  key text primary key,
+  value jsonb not null,
+  updated_at timestamptz not null default now()
+);
+```
+Store as `{ "key": "mortgage_rate_30yr", "value": {"rate": 7.02, "source": "FRED MORTGAGE30US", "as_of": "2026-08-20"} }`. A generic key/value table rather than a single-purpose one, since other site-wide defaults (e.g. property tax rate assumption) may want the same treatment later.
+
+**Implementation — Vercel Cron:**
+- `app/api/cron/update-mortgage-rate/route.ts` — a route handler that:
+  1. Calls `https://api.stlouisfed.org/fred/series/observations?series_id=MORTGAGE30US&api_key=...&file_type=json&sort_order=desc&limit=1`
+  2. Parses the latest observation value
+  3. Upserts it into `site_config` under `mortgage_rate_30yr`
+- `vercel.json` cron entry, scheduled weekly after the Thursday 10am ET release — e.g. Friday morning to give the data a buffer:
+```json
+{
+  "crons": [
+    { "path": "/api/cron/update-mortgage-rate", "schedule": "0 14 * * 5" }
+  ]
+}
+```
+  (14:00 UTC Friday = 9am Central)
+- Protect the route with Vercel's `CRON_SECRET` env var check (Vercel sends it as a bearer token automatically on cron-triggered requests) so the endpoint can't be hit publicly to force-refresh or spam the FRED API.
+- `FRED_API_KEY` as a Vercel environment variable, not committed to the repo.
+
+**RLS:** keep `site_config` locked down like every other non-public table — no anon select policy. The calculator doesn't read it directly; instead, add a small server-side API route (e.g. `app/api/mortgage-rate/route.ts`) that reads `site_config` using the service-role key and returns just `{ rate: 7.02 }` to the client. `CashFlowCalculator.tsx` fetches from that route, not from Supabase directly. This keeps the "locked down by default, explicit anon-insert only on `contacts`/`leads`" posture from Phase 1 intact — `site_config` never gets a public-facing policy at all.
+
+**Consuming the value:** `CashFlowCalculator.tsx` calls `/api/mortgage-rate` on page load and uses the returned value as the interest rate field's default — still fully editable by the visitor, this only changes what they see pre-filled.
+
+**Fallback:** if the `site_config` row is missing or the cron hasn't run yet (first deploy), fall back to a hardcoded default in code — same 7.0% placeholder, just as a safety net rather than the primary source.
+
+## 7. Explicitly out of scope for this phase
 
 - No PDF export / email-me-a-copy feature — the unlock-in-place UX covers the "give me something for my email" incentive without the extra build surface.
 - No saved/returning-user state (e.g. "resume my calculation") — out of scope until there's a reason to build accounts.
