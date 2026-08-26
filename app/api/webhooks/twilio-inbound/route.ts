@@ -18,12 +18,16 @@ const START_KEYWORDS = new Set(['START', 'UNSTOP']);
 const CONSENT_KEYWORDS = new Set(['YES', 'Y']);
 
 export async function POST(request: NextRequest) {
+  if (!process.env.TWILIO_AUTH_TOKEN) {
+    return NextResponse.json({ error: 'Not configured' }, { status: 503 });
+  }
+
   const rawBody = await request.text();
   const params = new URLSearchParams(rawBody);
   const signature = request.headers.get('x-twilio-signature') ?? '';
 
   const isValid = twilio.validateRequest(
-    process.env.TWILIO_AUTH_TOKEN!,
+    process.env.TWILIO_AUTH_TOKEN,
     signature,
     request.url,
     Object.fromEntries(params)
