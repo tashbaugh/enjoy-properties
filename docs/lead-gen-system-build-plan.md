@@ -78,7 +78,16 @@ This is deliberately simple — it's the backbone everything else (n8n workflows
 - All 5 core tables (`contacts`, `properties`, `leads`, `interactions`, `content_pieces`) created **now**, even though only `contacts`/`leads` are used yet — avoids a schema migration when Phase 3 n8n workflows need `interactions`.
 - RLS: locked down by default; explicit `anon insert` policies added only on `contacts` and `leads` (public form writes), everything else owner/service-role only.
 - Stack: Next.js (App Router, TS, Tailwind) on Vercel; Supabase client via `@supabase/supabase-js`.
-- **Compliance note:** no TREC broker-ID text goes on the site until sponsorship is finalized — footer component built now with a placeholder slot so it's a one-line add later, not a redesign.
+- **Compliance note — RESOLVED (see "Footer / TREC compliance" below):** broker sponsorship finalized Aug 2026; the placeholder footer slot from this phase is now filled in with real broker-ID text.
+
+### Footer / TREC compliance — **DONE (Aug 2026)**
+- Broker sponsorship with Texas Premier Realty finalized — Phase 1's placeholder footer slot is filled in with real broker-ID text (implemented directly in `components/Footer.tsx`).
+- **Footer text:** `Tyler Ashbaugh, REALTOR® | Texas Premier Realty, LLC | TREC Lic. #833862-SA`
+- **Logo:** charcoal-gray TPR variant on a light chip for contrast against the dark footer (subtle, compliance-only — not brand-forward; full-color maroon/gold variant reserved for business card use instead)
+- **Headshot: DONE.** Added to the homepage hero (circular photo + name/title badge above the H1) — the footer itself stays photo-free by design, this only resolves the site-wide "no headshot yet" gap noted here originally.
+- **Equal Housing Opportunity notice: DONE.** Added to the footer alongside the TREC line (HUD house/circle icon + statement) — a Fair Housing marketing norm distinct from the TREC broker-ID requirement, sitewide via the root layout.
+- **TREC §535.155 note:** broker name must carry equal visual weight to the agent's name in the footer — not smaller or fine-print — so styling keeps them the same size/prominence, stacked or inline. (The EHO notice does *not* need this same equal-weight treatment — that requirement is specific to broker identification.)
+- **Reference:** Tyler's TREC Sales Agent license #833862-SA expires 02/28/2027; sponsor Texas Premier Realty LLC, sponsor license #9014663-BB.
 
 ### Business sequencing decision — **LOCKED IN**
 - Starting cold (no existing sphere of influence). Given this, active selling focus for **Months 1–3** is **residential sales + leases (both tenant-side and landlord-side)**, not investor deals — lower trust barrier, faster cycle time (1–3 weeks for a lease vs. 4–8 weeks for a sale), better fit for a brand-new agent with zero track record.
@@ -105,12 +114,21 @@ This is deliberately simple — it's the backbone everything else (n8n workflows
 ### Lead attribution & conversion tracking — **BUILT**
 - `lib/utm.ts`: captures `utm_source/medium/campaign/term/content` from the landing URL into `sessionStorage` on first load, persists across internal navigation so attribution survives a visitor browsing multiple pages before converting.
 - `ContactForm` writes `contacts.source` as `'ad'` automatically when UTM params are present (else falls back to the page's default), and appends UTM data to `leads.source_detail` (e.g. `"landing-page | google/buyers"`).
-- `lib/analytics.ts` + root layout: Google Ads gtag and Meta Pixel both load site-wide; `trackLeadConversion()` fires both platforms' lead-conversion events immediately after a successful Supabase insert (not before, so only confirmed leads report as conversions).
+- `lib/analytics.ts` + root layout: Google Ads gtag and Meta Pixel both load site-wide (guarded to render only once real IDs are set — no broken calls with an undefined ID before then); `trackLeadConversion()` fires both platforms' lead-conversion events immediately after a successful Supabase insert (not before, so only confirmed leads report as conversions).
 
-### Phase 2 — Lead magnet + capture
-- Build an **interactive investor cash flow / cap rate calculator** as a lead magnet (plays directly to your analytical edge, doubles as content and demonstrates expertise)
-- Every calculator use + email capture writes a `contacts` + `leads` row
-- Add a simple newsletter signup for market updates
+### BoldTrail / IDX integration — **LOCKED IN**
+- **enjoyproperties.us stays primary.** It remains the paid-ad landing destination, brand site, and lead-capture system (Supabase `ContactForm` + UTM attribution + conversion pixels, per section above). BoldTrail does not replace it.
+- **BoldTrail runs on its default free subdomain** (e.g., `tylerashbaugh.texaspremierrealty.com`) — no Vanity Domain add-on purchase (~$11/mo). BoldTrail's WordPress IDX plugin (the only route to a fully custom-domain IDX experience) doesn't apply — the stack is Next.js, not WordPress. BoldTrail's sole job here is being the MLS-compliant IDX property search surface that enjoyproperties.us can't build directly (portal-only MLS access, no API).
+- **Link, don't merge:** add a "Search Homes" nav item/button on enjoyproperties.us pointing to the BoldTrail subdomain. Visitors leave your domain to search listings — accepted tradeoff given the WordPress constraint above.
+- **Known gap — dual CRM:** leads BoldTrail captures via its own registration/lead forms land in Inside Real Estate's CRM, not Supabase. Not a launch blocker. Revisit once Phase 3 (n8n) is online — check whether BoldTrail exposes a webhook/API to sync those leads into `contacts`/`leads` so there's one pipeline, not two.
+- **Open item:** confirm with Daryl whether the IDX feed includes LERA's rental listings or only for-sale (see Leases section above) — determines whether "Search Homes" also covers the lease funnel.
+
+### Phase 2 — Lead magnet + capture — **SPECCED, READY FOR BUILD**
+- Full spec: `phase2-cashflow-calculator-spec.md` — inputs, formulas, gating UX, schema, and component structure.
+- **Placement — LOCKED IN:** embedded on the existing `/invest` route, not a standalone `/calculator` route. Keeps Phase 1's two-route discipline; a standalone route is a low-regret future refactor once Phase 4 content work creates a real reason to link the tool independently of the investor pitch page.
+- **Gating model — LOCKED IN:** hybrid. Free tier (cap rate, monthly cash flow) computes live as the visitor types, no gate — this is the demonstration-of-expertise moment and shouldn't be blocked. Gated tier (cash-on-cash return, full monthly expense breakdown, 5-year equity/appreciation table) unlocks in place after email capture, no redirect.
+- **Schema — LOCKED IN:** two new nullable columns on `leads` — `calculator_inputs` (jsonb, raw form state) and `calculator_results` (jsonb, computed snapshot at submission time, so historical leads reflect what the visitor actually saw even if formulas change later). `leads.tags[]` gets a `"calculator"` entry, `source_detail: "invest-page | calculator"`.
+- Newsletter signup for market updates: deferred, not part of this build pass.
 
 ### Phase 3 — Automation engine online
 - Deploy n8n on a small VPS
@@ -137,8 +155,8 @@ This is deliberately simple — it's the backbone everything else (n8n workflows
 These aren't optional and apply regardless of tech stack:
 
 - **TCPA / Do-Not-Call:** cold SMS/calls require consent; scrub against the National DNC registry before any automated outreach campaign.
-- **TREC advertising rules:** once you're with a broker, all marketing (website, social, ads) must include required broker identification per TREC rules — build this into your site/content templates from day one so you're not retrofitting later.
-- **Fair Housing:** AI-generated ad copy and targeting (especially paid ads) needs a human review pass — automated copy can inadvertently violate fair housing advertising rules around language or ad targeting.
+- **TREC advertising rules:** broker sponsorship is finalized as of Aug 2026 — required broker identification (see "Footer / TREC compliance" above) now applies to all live marketing (website, social, ads), not just a future placeholder.
+- **Fair Housing:** AI-generated ad copy and targeting (especially paid ads) needs a human review pass — automated copy can inadvertently violate fair housing advertising rules around language or ad targeting. The site's Equal Housing Opportunity notice (see "Footer / TREC compliance" above) is a baseline trust signal, not a substitute for this review.
 - **Public records use:** pulling from county appraisal/tax data is legal and common practice, but keep records of your data source for compliance/audit purposes.
 
 None of this blocks the build — it just needs a review checkpoint before any workflow starts sending unsupervised outbound messages.
