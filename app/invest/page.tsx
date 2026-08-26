@@ -1,4 +1,5 @@
 import ContactForm from '@/components/ContactForm';
+import CashFlowCalculator from '@/components/CashFlowCalculator';
 
 export default function Invest() {
   return (
@@ -22,6 +23,12 @@ export default function Invest() {
           <div className="mt-6">
             <ContactForm source="content" contactType="investor" sourceDetail="invest-page" />
           </div>
+        </div>
+      </div>
+
+      <div className="border-t border-line">
+        <div className="mx-auto max-w-6xl px-4 py-20 md:py-28">
+          <CashFlowCalculator />
         </div>
       </div>
     </main>
