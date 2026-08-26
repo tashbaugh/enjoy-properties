@@ -1,5 +1,6 @@
 {
   "crons": [
-    { "path": "/api/cron/update-mortgage-rate", "schedule": "0 14 * * 5" }
+    { "path": "/api/cron/update-mortgage-rate", "schedule": "0 14 * * 5" },
+    { "path": "/api/cron/follow-up-reminders", "schedule": "0 13 * * *" }
   ]
 }
