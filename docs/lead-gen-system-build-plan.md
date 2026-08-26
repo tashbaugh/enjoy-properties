@@ -11,7 +11,7 @@
 
 - **Build once, distribute everywhere.** Written content is the source of truth; everything else (social captions, short video scripts, email nurture) is derived from it via AI, not created from scratch each time.
 - **You are the CRM vendor.** At <$200/mo and with your background, a self-built data layer beats a SaaS CRM — full schema control, no per-seat fees, and it becomes the foundation every other tool plugs into.
-- **Automation is the connective tissue, not a feature.** n8n (or similar) sits in the middle so new lead sources, channels, or AI models can be added later without re-architecting anything.
+- **Automation is the connective tissue, not a feature.** Serverless API routes + Vercel Cron sit in the middle (see Phase 3 — architecture superseded n8n/VPS) so new lead sources, channels, or AI models can be added later without re-architecting anything.
 - **MLS is not your data source for investor leads.** You only have portal access (no API), so off-market/investor sourcing runs through public records instead — which is actually the *better* dataset for this (distressed, absentee-owner, and probate properties mostly aren't on MLS anyway).
 
 ---
@@ -22,14 +22,14 @@
 |---|---|---|---|
 | Frontend / website | Next.js on **Vercel** (Hobby tier) | Free at low traffic, scales seamlessly, you already know how to build in React | $0 |
 | Database / backend | **Supabase** (Postgres + Auth + Storage) | Generous free tier, real SQL, you own the schema | $0–25 |
-| Automation / orchestration | **n8n**, self-hosted on a small VPS (Hetzner/DigitalOcean) | Visual workflow engine; open source; glue between every tool | ~$6–12 |
+| Automation / orchestration | **Next.js API routes + Vercel Cron** (superseded n8n/VPS — see Phase 3) | Serverless functions in the same repo/deploy pipeline as the rest of the site; no separate infra to run or patch | $0 (included in Vercel) |
 | AI | **Claude API** (pay-as-you-go) | Content generation, lead personalization, deal analysis narratives | ~$10–30 (usage-based) |
 | Email | **Resend** | Free tier ~3k emails/mo, clean API | $0 |
 | SMS | **Twilio** | Pay-per-message (~$0.008/msg) + $1.15/mo number | ~$5–15 |
 | Domain | Any registrar | Personal brand domain | ~$1/mo (annual) |
 | Skip tracing (Phase 4+) | Pay-per-lookup service, added later | Only once off-market sourcing is live | Variable, start manual |
 
-**Total to start: roughly $25–50/mo**, leaving headroom under your $200 ceiling for paid ads once the funnel is proven.
+**Total to start: roughly $20–40/mo** (down from an original $25–50/mo estimate now that automation dropped the VPS line item), leaving headroom under your $200 ceiling for paid ads once the funnel is proven.
 
 ---
 
@@ -61,7 +61,7 @@ content_pieces
   derived_assets (jsonb — social captions, video script, etc.), published_at
 ```
 
-This is deliberately simple — it's the backbone everything else (n8n workflows, AI prompts, dashboards) reads from and writes to.
+This is deliberately simple — it's the backbone everything else (automation workflows, AI prompts, dashboards) reads from and writes to.
 
 ---
 
@@ -75,7 +75,7 @@ This is deliberately simple — it's the backbone everything else (n8n workflows
   - Blog/content section deliberately deferred to Phase 4 (content engine) to avoid building infra that gets reworked once Claude-driven content workflows exist.
 - Shared `ContactForm` component writes to both `contacts` and `leads` in one submit (client-side Supabase insert, no API route needed at this scale).
 - Lead visibility: **Supabase table editor** is sufficient for now — no internal `/admin` page being built this phase.
-- All 5 core tables (`contacts`, `properties`, `leads`, `interactions`, `content_pieces`) created **now**, even though only `contacts`/`leads` are used yet — avoids a schema migration when Phase 3 n8n workflows need `interactions`.
+- All 5 core tables (`contacts`, `properties`, `leads`, `interactions`, `content_pieces`) created **now**, even though only `contacts`/`leads` are used yet — avoids a schema migration when Phase 3's automation workflows need `interactions`.
 - RLS: locked down by default; explicit `anon insert` policies added only on `contacts` and `leads` (public form writes), everything else owner/service-role only.
 - Stack: Next.js (App Router, TS, Tailwind) on Vercel; Supabase client via `@supabase/supabase-js`.
 - **Compliance note — RESOLVED (see "Footer / TREC compliance" below):** broker sponsorship finalized Aug 2026; the placeholder footer slot from this phase is now filled in with real broker-ID text.
@@ -109,7 +109,7 @@ This is deliberately simple — it's the backbone everything else (n8n workflows
 - **Google Search campaigns:** "SA Home Buyers" (buyer-intent keywords → `/`) and "SA Rentals" (tenant-intent keywords → tenant-lease section). Negative keywords exclude portal/competitor terms (`zillow`, `realtor.com`) and off-intent terms (`jobs`, `free`).
 - **Meta campaigns:** Lead Ads for tenant-side and landlord-side leasing. Must declare **Special Ad Category: Housing** on every campaign (mandatory as of 2026 — Meta auto-detects real-estate imagery and applies restrictions even if undeclared). This removes age/gender/ZIP targeting and enforces a 15-mile minimum radius; targeting precision comes from ad creative/messaging, not audience filters. Google now applies similar HEC (Housing/Employment/Credit) restrictions — build compliant copy once, don't treat either platform as a workaround for the other.
 - **Ad copy compliance:** no age/family/lifestyle targeting language, no "exclusive" or demographic references; all Claude-drafted ad and landing copy gets a human Fair Housing pass before publishing (consistent with the elevated rental-copy review noted above).
-- **Meta lead routing — Option B chosen:** Meta ads point traffic to the site (`ContactForm`) rather than using Meta's native Lead Ads forms. Keeps one lead pipeline (UTM capture → Supabase → both conversion pixels) instead of standing up a Meta webhook → n8n → Supabase sync, which would pull Phase 3 automation forward before n8n exists in the stack. Revisit native Lead Ads once n8n is live (Phase 3) and performance data justifies the added complexity.
+- **Meta lead routing — Option B chosen:** Meta ads point traffic to the site (`ContactForm`) rather than using Meta's native Lead Ads forms. Keeps one lead pipeline (UTM capture → Supabase → both conversion pixels) instead of standing up a separate Meta webhook → Supabase sync ahead of when Phase 3's automation infrastructure exists. Revisit native Lead Ads once Phase 3 is live and performance data justifies the added complexity.
 
 ### Lead attribution & conversion tracking — **BUILT**
 - `lib/utm.ts`: captures `utm_source/medium/campaign/term/content` from the landing URL into `sessionStorage` on first load, persists across internal navigation so attribution survives a visitor browsing multiple pages before converting.
@@ -120,7 +120,7 @@ This is deliberately simple — it's the backbone everything else (n8n workflows
 - **enjoyproperties.us stays primary.** It remains the paid-ad landing destination, brand site, and lead-capture system (Supabase `ContactForm` + UTM attribution + conversion pixels, per section above). BoldTrail does not replace it.
 - **BoldTrail runs on its default free subdomain** (e.g., `tylerashbaugh.texaspremierrealty.com`) — no Vanity Domain add-on purchase (~$11/mo). BoldTrail's WordPress IDX plugin (the only route to a fully custom-domain IDX experience) doesn't apply — the stack is Next.js, not WordPress. BoldTrail's sole job here is being the MLS-compliant IDX property search surface that enjoyproperties.us can't build directly (portal-only MLS access, no API).
 - **Link, don't merge:** add a "Search Homes" nav item/button on enjoyproperties.us pointing to the BoldTrail subdomain. Visitors leave your domain to search listings — accepted tradeoff given the WordPress constraint above.
-- **Known gap — dual CRM:** leads BoldTrail captures via its own registration/lead forms land in Inside Real Estate's CRM, not Supabase. Not a launch blocker. Revisit once Phase 3 (n8n) is online — check whether BoldTrail exposes a webhook/API to sync those leads into `contacts`/`leads` so there's one pipeline, not two.
+- **Known gap — dual CRM:** leads BoldTrail captures via its own registration/lead forms land in Inside Real Estate's CRM, not Supabase. **Resolved by Phase 3** — the BoldTrail→Zapier→`app/api/webhooks/boldtrail-lead` pipeline syncs those leads into `contacts`/`leads` directly, so there's one pipeline, not two.
 - **Open item:** confirm with Daryl whether the IDX feed includes LERA's rental listings or only for-sale (see Leases section above) — determines whether "Search Homes" also covers the lease funnel.
 
 ### Phase 2 — Lead magnet + capture — **SPECCED, READY FOR BUILD**
@@ -130,14 +130,17 @@ This is deliberately simple — it's the backbone everything else (n8n workflows
 - **Schema — LOCKED IN:** two new nullable columns on `leads` — `calculator_inputs` (jsonb, raw form state) and `calculator_results` (jsonb, computed snapshot at submission time, so historical leads reflect what the visitor actually saw even if formulas change later). `leads.tags[]` gets a `"calculator"` entry, `source_detail: "invest-page | calculator"`.
 - Newsletter signup for market updates: deferred, not part of this build pass.
 
-### Phase 3 — Automation engine online
-- Deploy n8n on a small VPS
-- First workflow: **new lead → Claude API drafts a personalized welcome email/SMS → sent via Resend/Twilio → logged in `interactions`**
-- Second workflow: follow-up reminders based on `next_follow_up_at`
+### Phase 3 — Automation engine online — **SPECCED, ARCHITECTURE CHANGED**
+- Full spec: `phase3-automation-spec.md`.
+- **Architecture superseded — LOCKED IN:** Next.js API routes + Vercel Cron, not n8n on a VPS. Everything downstream of the BoldTrail→Zapier webhook runs as serverless functions in this same repo — same deploy pipeline as the rest of the site, same pattern as the Phase 2 mortgage-rate cron. n8n and the VPS line item from §2 are dropped from the stack entirely; every other build-plan reference to "n8n (Phase 3)" means this serverless approach instead.
+- First workflow: BoldTrail "New Lead" → Zapier → `app/api/webhooks/boldtrail-lead` → Claude API drafts a personalized welcome email/SMS (fixed skeleton, Claude fills only narrow slots — not freeform) → sent via Resend/Twilio → logged in `interactions`.
+- Second workflow: `app/api/cron/follow-up-reminders`, daily, based on `next_follow_up_at`.
+- **SMS consent — findings changed the design:** BoldTrail's own consent checkbox is pre-checked by default and doesn't name Tyler or Texas Premier Realty, so it's treated as insufficient for this pipeline. Every BoldTrail lead needs a fresh double opt-in (explicit "reply YES") before any SMS goes out under Tyler's own identity; the welcome **email** still sends regardless (CAN-SPAM's opt-out model, not PEWC). Flagged explicitly as needing actual legal review before live SMS sends, given a pre-checked-box + Fifth Circuit fact pattern — not resolved by the technical design alone.
+- IABS link requirement (see Footer/TREC compliance) is reused here rather than duplicated — the welcome email's `{{iabs_link}}` slot points at the same PDF already linked in the site footer.
 
 ### Phase 4 — Content engine
 - Weekly cadence: **one pillar post** — e.g., "Analyzing this SA fourplex: real numbers" (written, using real or anonymized listing data + your cash flow calculator)
-- n8n workflow: on publish, call Claude API to generate 3–5 social captions + a short video script from the pillar post, store in `content_pieces.derived_assets`
+- Automation (serverless, per Phase 3's architecture): on publish, call Claude API to generate 3–5 social captions + a short video script from the pillar post, store in `content_pieces.derived_assets`
 - This is your signature content type — it's differentiated (most agents don't do real numbers-based analysis), automatable, and speaks directly to the investor niche
 
 ### Phase 5 — Off-market/investor sourcing
@@ -175,7 +178,7 @@ None of this blocks the build — it just needs a review checkpoint before any w
 
 ## 7. Expansion path
 
-Because n8n sits in the middle as the orchestration layer, adding new pieces later doesn't require re-architecting:
+Because serverless API routes + Vercel Cron sit in the middle as the orchestration layer (Phase 3), adding new pieces later doesn't require re-architecting:
 - New lead source → new workflow trigger, same `leads` table
 - Paid ads → new source tag, same nurture logic
 - Transaction management (your Phase 2 priority from the original interview) → new `transactions` table, hooks into existing `contacts`/`leads`
