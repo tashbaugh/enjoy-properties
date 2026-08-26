@@ -60,6 +60,16 @@ export default function Footer() {
             Tyler Ashbaugh, REALTOR® | Texas Premier Realty, LLC | TREC Lic. #833862-SA
           </p>
         </div>
+        <p className="mt-2 text-center text-xs text-paper/60">
+          <a
+            href="https://tprofficeinfo.com/wp-content/uploads/2026/01/2026-IABS-Updated.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-gold"
+          >
+            Texas Real Estate Commission Information About Brokerage Services
+          </a>
+        </p>
         <div className="mt-3 flex flex-col items-center justify-center gap-1.5 text-center sm:flex-row sm:gap-2">
           <EqualHousingIcon />
           <p className="text-xs text-paper/60">
