@@ -192,6 +192,13 @@ export default function CashFlowCalculator() {
 
     trackLeadConversion('investor');
     setStatus('unlocked');
+    // Fire-and-forget -- convenience notification to the agent, must
+    // never block or fail the visitor's own unlocked state.
+    fetch('/api/notify-new-lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contactId: contact.id }),
+    }).catch(() => {});
   }
 
   const unlocked = status === 'unlocked';

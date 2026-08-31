@@ -4,6 +4,7 @@ import { sendEmail } from '@/lib/resend';
 import { sendSms } from '@/lib/twilio';
 import { draftWelcomeMessageSlots } from '@/lib/claude-welcome-message';
 import { buildWelcomeEmailHtml, subjectFor } from '@/lib/welcome-email';
+import { notifyAgentOfNewLead } from '@/lib/notify-agent';
 
 // Contract for Zapier's Action-step field mapping. This is the ACTUAL
 // key shape observed from a real production webhook call (snake_case,
@@ -226,11 +227,13 @@ export async function POST(request: NextRequest) {
         ai_generated: false,
       });
     })(),
+    notifyAgentOfNewLead(contactId),
   ]);
 
+  const sendLabels = ['email', 'sms', 'agent notification'];
   sendResults.forEach((result, i) => {
     if (result.status === 'rejected') {
-      console.error(`boldtrail-lead: ${i === 0 ? 'email' : 'sms'} send failed`, result.reason);
+      console.error(`boldtrail-lead: ${sendLabels[i]} send failed`, result.reason);
     }
   });
 

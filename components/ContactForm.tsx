@@ -49,7 +49,16 @@ export default function ContactForm({ source, contactType, sourceDetail, tags }:
     });
 
     setStatus(leadError ? 'error' : 'done');
-    if (!leadError) trackLeadConversion(contactType);
+    if (!leadError) {
+      trackLeadConversion(contactType);
+      // Fire-and-forget -- convenience notification to the agent, must
+      // never block or fail the visitor's own success state.
+      fetch('/api/notify-new-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contactId: contact.id }),
+      }).catch(() => {});
+    }
   }
 
   const inputClasses =
