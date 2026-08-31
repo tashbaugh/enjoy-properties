@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { IABS_URL } from '@/lib/constants';
 
 function EqualHousingIcon() {
   return (
@@ -62,7 +63,7 @@ export default function Footer() {
         </div>
         <p className="mt-2 text-center text-xs text-paper/60">
           <a
-            href="https://tprofficeinfo.com/wp-content/uploads/2026/01/2026-IABS-Updated.pdf"
+            href={IABS_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="underline hover:text-gold"
