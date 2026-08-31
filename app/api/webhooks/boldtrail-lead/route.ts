@@ -5,39 +5,41 @@ import { sendSms } from '@/lib/twilio';
 import { draftWelcomeMessageSlots } from '@/lib/claude-welcome-message';
 import { buildWelcomeEmailHtml, subjectFor } from '@/lib/welcome-email';
 
-// Contract for Zapier's Action-step field mapping. The BoldTrail trigger
-// fields observed (docs/handoff-boldtrail-webhook.md) use human-readable
-// labels Zapier assigns, not stable JSON keys -- rather than guess at
-// Zapier's internal naming, this route defines the keys and Zapier's
-// Action step maps BoldTrail's fields onto them.
+// Contract for Zapier's Action-step field mapping. This is the ACTUAL
+// key shape observed from a real production webhook call (snake_case,
+// matching BoldTrail's own field naming) -- an earlier version of this
+// route specified camelCase keys, which the real configured Zap never
+// matched, so every field silently read as undefined. Confirmed via
+// raw_payload on a real inserted row before this fix.
 type BoldTrailPayload = {
-  firstName?: string;
-  lastName?: string;
+  firstname?: string;
+  lastname?: string;
   email?: string;
   phone?: string;
-  isSeller?: string | boolean; // "Yes"/"No" as sent by Zapier, or a real boolean
-  leadId?: string | number;
-  leadStatus?: string;
-  quality?: string | number;
+  is_seller?: string | boolean; // "Yes"/"No" as sent by Zapier, or a real boolean
+  external_id?: string | number; // BoldTrail's Leadid
+  lead_status?: string;
+  lead_score?: string | number;
   hashtags?: string;
-  createdAt?: string;
-  sourceUrl?: string;
-  howAddedToDatabase?: string;
-  onDrip?: string | boolean;
-  leadDetailsLink?: string;
-  assignedAgentEmail?: string;
-  assignedAgentName?: string;
-  emailStatus?: string;
-  hasLender?: string | boolean;
-  leadCity?: string;
-  leadState?: string;
-  leadZip?: string;
+  created_at?: string;
+  source_url?: string;
+  source_method?: string;
+  on_drip?: string | boolean;
+  lead_details_link?: string;
+  assigned_agent_id?: string | number;
+  assigned_agent_email?: string;
+  assigned_agent_name?: string;
+  email_status?: string;
+  has_lender?: string | boolean;
+  geo_city?: string;
+  geo_state?: string;
+  geo_zipcode?: string;
   street?: string;
-  sellerStreet?: string;
-  sellerCity?: string;
-  sellerState?: string;
-  sellerZip?: string;
-  sellerFullAddress?: string;
+  seller_street?: string;
+  seller_city?: string;
+  seller_state?: string;
+  seller_zipcode?: string;
+  seller_full_address?: string;
 };
 
 const STAGE_MAP: Record<string, string> = {
@@ -85,16 +87,18 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Missing email' }, { status: 400 });
   }
 
-  if (payload.assignedAgentEmail && payload.assignedAgentEmail !== ASSIGNED_AGENT_EMAIL) {
+  if (!payload.assigned_agent_email) {
+    console.warn('boldtrail-lead: no assigned_agent_email on payload -- unexpected, worth checking Zapier field mapping');
+  } else if (payload.assigned_agent_email !== ASSIGNED_AGENT_EMAIL) {
     console.warn(
-      `boldtrail-lead: assigned agent is "${payload.assignedAgentEmail}", expected "${ASSIGNED_AGENT_EMAIL}" -- lead may be routed unexpectedly`
+      `boldtrail-lead: assigned agent is "${payload.assigned_agent_email}", expected "${ASSIGNED_AGENT_EMAIL}" -- lead may be routed unexpectedly`
     );
   }
 
   // Idempotency -- see validLeadId() above for why an invalid id skips
   // dedup entirely rather than risk a false-positive match that would
   // silently drop a real lead.
-  const externalId = validLeadId(payload.leadId);
+  const externalId = validLeadId(payload.external_id);
   if (!externalId) {
     console.warn('boldtrail-lead: missing/invalid Leadid, proceeding without idempotency check', {
       email: payload.email,
@@ -112,10 +116,10 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  const firstName = (payload.firstName ?? '').trim();
-  const lastName = (payload.lastName ?? '').trim();
+  const firstName = (payload.firstname ?? '').trim();
+  const lastName = (payload.lastname ?? '').trim();
   const name = `${firstName} ${lastName}`.trim() || 'BoldTrail Lead';
-  const contactType = isAffirmative(payload.isSeller) ? 'seller' : 'buyer';
+  const contactType = isAffirmative(payload.is_seller) ? 'seller' : 'buyer';
   const hashtags = parseHashtags(payload.hashtags);
 
   // Look up by email rather than blind-insert -- reuses an existing
@@ -158,12 +162,12 @@ export async function POST(request: NextRequest) {
     contactId = newContact.id;
   }
 
-  const stage = payload.leadStatus ? (STAGE_MAP[payload.leadStatus] ?? 'new') : 'new';
+  const stage = payload.lead_status ? (STAGE_MAP[payload.lead_status] ?? 'new') : 'new';
 
   const { error: leadError } = await supabaseAdmin.from('leads').insert({
     contact_id: contactId,
     stage,
-    score: parseQuality(payload.quality),
+    score: parseQuality(payload.lead_score),
     source_detail: 'boldtrail-zapier',
     external_source: 'boldtrail',
     external_id: externalId,
