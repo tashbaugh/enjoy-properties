@@ -78,6 +78,11 @@ export default function Footer() {
             housing laws. Equal Housing Opportunity.
           </p>
         </div>
+        <p className="mt-4 text-center text-xs text-paper/60">
+          <Link href="/privacy" className="underline hover:text-gold">Privacy Policy</Link>
+          {' · '}
+          <Link href="/terms" className="underline hover:text-gold">Terms and Conditions</Link>
+        </p>
         <p className="mt-4 text-center text-xs text-paper/40">
           © {new Date().getFullYear()} Enjoy Properties.
         </p>

@@ -7,6 +7,8 @@ const NAV_LINKS = [
   { href: '/invest', label: 'Invest' },
 ];
 
+const BOLDTRAIL_SEARCH_URL = 'https://tylerashbaugh.texaspremierrealty.com/';
+
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-paper/90 backdrop-blur">
@@ -20,6 +22,14 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
+          <a
+            href={BOLDTRAIL_SEARCH_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition hover:text-ink"
+          >
+            Search Homes
+          </a>
         </nav>
         <Link
           href="/#buy"

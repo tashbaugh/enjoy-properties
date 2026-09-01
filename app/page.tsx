@@ -32,9 +32,10 @@ export default function Home() {
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-ink-soft">
               I&apos;m Tyler Ashbaugh, a licensed Texas REALTOR® with Texas Premier Realty.
-              Before real estate, I spent 20+ years as a software engineer — and I bring that
-              same analytical, no-nonsense approach to helping you buy, sell, or lease in San
-              Antonio. No pressure, no fluff, just clear numbers and honest guidance.
+              I&apos;ve also spent 20+ years as a software engineer — work I still do alongside
+              real estate — and I bring that same analytical, no-nonsense approach to helping
+              you buy, sell, or lease in San Antonio. No pressure, no fluff, just clear numbers
+              and honest guidance.
             </p>
             <ul className="mt-8 space-y-3">
               {TRUST_POINTS.map((point) => (
