@@ -5,15 +5,32 @@ import { supabase } from '@/lib/supabase';
 import { captureUtmParams, buildSourceDetail, resolveContactSource } from '@/lib/utm';
 import { trackLeadConversion } from '@/lib/analytics';
 
+type ContactType = 'buyer' | 'seller' | 'investor' | 'past_client';
+
 type Props = {
   source: 'content' | 'ad' | 'referral' | 'public_record'; // fallback if no UTM present
-  contactType: 'buyer' | 'seller' | 'investor' | 'past_client';
+  contactType?: ContactType; // required unless showReasonSelect is true
   sourceDetail: string; // e.g. "landing-page", "lease-tenant", "lease-landlord"
   tags?: string[]; // e.g. ["lease"]
+  // General /contact page only: adds a "what are you looking for?"
+  // select that determines contactType/tags itself, instead of the
+  // caller passing a single fixed contactType like every other
+  // ContactForm placement does.
+  showReasonSelect?: boolean;
 };
 
-export default function ContactForm({ source, contactType, sourceDetail, tags }: Props) {
-  const [form, setForm] = useState({ name: '', email: '', phone: '' });
+const REASON_OPTIONS: { value: string; label: string; contactType: ContactType; tags?: string[] }[] = [
+  { value: 'buying', label: 'Buying', contactType: 'buyer' },
+  { value: 'renting', label: 'Renting', contactType: 'buyer', tags: ['lease'] },
+  { value: 'listing', label: 'Listing a rental', contactType: 'seller', tags: ['lease'] },
+  // No signal either way -- defaults to the most common/neutral lead
+  // type rather than leaving contact_type unset, since the column is
+  // NOT NULL and a schema change wasn't worth it for this.
+  { value: 'not-sure', label: 'Not sure yet', contactType: 'buyer' },
+];
+
+export default function ContactForm({ source, contactType, sourceDetail, tags, showReasonSelect }: Props) {
+  const [form, setForm] = useState({ name: '', email: '', phone: '', reason: '' });
   const [status, setStatus] = useState<'idle' | 'submitting' | 'done' | 'error'>('idle');
 
   useEffect(() => {
@@ -24,6 +41,10 @@ export default function ContactForm({ source, contactType, sourceDetail, tags }:
     e.preventDefault();
     setStatus('submitting');
 
+    const selectedReason = REASON_OPTIONS.find((r) => r.value === form.reason);
+    const effectiveContactType = showReasonSelect ? selectedReason!.contactType : contactType!;
+    const effectiveTags = showReasonSelect ? (selectedReason!.tags ?? null) : (tags ?? null);
+
     const { data: contact, error: contactError } = await supabase
       .from('contacts')
       .insert({
@@ -31,8 +52,8 @@ export default function ContactForm({ source, contactType, sourceDetail, tags }:
         email: form.email,
         phone: form.phone,
         source: resolveContactSource(source),
-        contact_type: contactType,
-        tags: tags ?? null,
+        contact_type: effectiveContactType,
+        tags: effectiveTags,
       })
       .select('id')
       .single();
@@ -50,7 +71,7 @@ export default function ContactForm({ source, contactType, sourceDetail, tags }:
 
     setStatus(leadError ? 'error' : 'done');
     if (!leadError) {
-      trackLeadConversion(contactType);
+      trackLeadConversion(effectiveContactType);
       // Fire-and-forget -- convenience notification to the agent, must
       // never block or fail the visitor's own success state.
       fetch('/api/notify-new-lead', {
@@ -75,6 +96,23 @@ export default function ContactForm({ source, contactType, sourceDetail, tags }:
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      {showReasonSelect && (
+        <div className="flex flex-col gap-1.5">
+          <label htmlFor="reason" className={labelClasses}>What are you looking for?</label>
+          <select
+            id="reason"
+            required
+            className={inputClasses}
+            value={form.reason}
+            onChange={(e) => setForm({ ...form, reason: e.target.value })}
+          >
+            <option value="" disabled>Select one</option>
+            {REASON_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </div>
+      )}
       <div className="flex flex-col gap-1.5">
         <label htmlFor="name" className={labelClasses}>Name</label>
         <input
