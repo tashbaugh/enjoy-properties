@@ -32,7 +32,7 @@ export default function Header() {
           </a>
         </nav>
         <Link
-          href="/#buy"
+          href="/contact"
           className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper transition hover:bg-gold"
         >
           Get in touch
