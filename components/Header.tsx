@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 const NAV_LINKS = [
   { href: '/#buy', label: 'Buy' },
+  { href: '/#sell', label: 'Sell' },
   { href: '/#rent', label: 'Rent' },
   { href: '/#list-rental', label: 'List a Rental' },
   { href: '/invest', label: 'Invest' },
