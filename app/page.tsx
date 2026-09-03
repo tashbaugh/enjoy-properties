@@ -58,10 +58,39 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Tenant-side leasing */}
-      <section id="rent" className="scroll-mt-20 border-t border-line bg-white">
+      {/* Home sellers */}
+      <section id="sell" className="scroll-mt-20 border-t border-line bg-white">
         <div className="mx-auto grid max-w-6xl gap-12 px-4 py-20 md:grid-cols-2 md:items-center md:py-28">
-          <div className="order-2 rounded-2xl border border-line bg-paper p-6 shadow-sm sm:p-8 md:order-1">
+          <div>
+            <h2 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+              Thinking About Selling?
+            </h2>
+            <p className="mt-6 text-lg leading-relaxed text-ink-soft">
+              I help San Antonio homeowners sell with real market data and a clear process — no
+              guesswork, no pressure. Tell me a bit about your property and I&apos;ll follow up
+              with next steps.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-line bg-paper p-6 shadow-sm sm:p-8">
+            <h2 className="font-display text-xl font-semibold text-ink">Sell your home</h2>
+            <p className="mt-1 text-sm text-ink-soft">
+              A few details and I&apos;ll follow up with next steps.
+            </p>
+            <div className="mt-6">
+              <ContactForm
+                source="content"
+                contactType="seller"
+                sourceDetail="landing-page-sell"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Tenant-side leasing */}
+      <section id="rent" className="scroll-mt-20 border-t border-line bg-paper">
+        <div className="mx-auto grid max-w-6xl gap-12 px-4 py-20 md:grid-cols-2 md:items-center md:py-28">
+          <div className="order-2 rounded-2xl border border-line bg-white p-6 shadow-sm sm:p-8 md:order-1">
             <h2 className="font-display text-xl font-semibold text-ink">Find a rental</h2>
             <p className="mt-1 text-sm text-ink-soft">
               Tell me what you&apos;re looking for and I&apos;ll send matching listings.
@@ -88,7 +117,7 @@ export default function Home() {
       </section>
 
       {/* Landlord-side leasing */}
-      <section id="list-rental" className="scroll-mt-20 border-t border-line bg-paper">
+      <section id="list-rental" className="scroll-mt-20 border-t border-line bg-white">
         <div className="mx-auto grid max-w-6xl gap-12 px-4 py-20 md:grid-cols-2 md:items-center md:py-28">
           <div>
             <h2 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
@@ -99,7 +128,7 @@ export default function Home() {
               on pricing, a straightforward process, no guesswork.
             </p>
           </div>
-          <div className="rounded-2xl border border-line bg-white p-6 shadow-sm sm:p-8">
+          <div className="rounded-2xl border border-line bg-paper p-6 shadow-sm sm:p-8">
             <h2 className="font-display text-xl font-semibold text-ink">List your rental</h2>
             <p className="mt-1 text-sm text-ink-soft">
               A few details and I&apos;ll be in touch to talk pricing and process.

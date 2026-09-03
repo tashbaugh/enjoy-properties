@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { captureUtmParams, buildSourceDetail, resolveContactSource } from '@/lib/utm';
 import { trackLeadConversion } from '@/lib/analytics';
@@ -146,6 +147,13 @@ export default function ContactForm({ source, contactType, sourceDetail, tags, s
           onChange={(e) => setForm({ ...form, phone: e.target.value })}
         />
       </div>
+      <p className="text-xs leading-relaxed text-ink-soft/70">
+        By providing your phone number, you agree to receive text messages from Tyler Ashbaugh,
+        Texas Premier Realty regarding your inquiry. Message frequency varies. Message and data
+        rates may apply. Reply STOP to unsubscribe at any time. See our{' '}
+        <Link href="/privacy" className="underline hover:text-gold">Privacy Policy</Link> and{' '}
+        <Link href="/terms" className="underline hover:text-gold">Terms</Link>.
+      </p>
       <button
         disabled={status === 'submitting'}
         className="mt-2 w-full rounded-lg bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-gold disabled:cursor-not-allowed disabled:opacity-50"
