@@ -56,7 +56,7 @@ Subject: Welcome, {{first_name}} — let's find your next home in San Antonio
 Hi {{first_name}},
 
 Thanks for searching homes on my site! I'm Tyler Ashbaugh, a San Antonio
-REALTOR® with Texas Premier Realty — and before this, I spent 20+ years as
+REALTOR® with Texas Premier Realty — and before this, I spent 22 years as
 a software engineer, which comes in handy when it's time to dig into the
 numbers on a property.
 

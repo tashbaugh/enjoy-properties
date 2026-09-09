@@ -5,6 +5,7 @@ import { sendSms } from '@/lib/twilio';
 import { draftWelcomeMessageSlots } from '@/lib/claude-welcome-message';
 import { buildWelcomeEmailHtml, subjectFor } from '@/lib/welcome-email';
 import { notifyAgentOfNewLead } from '@/lib/notify-agent';
+import { timingSafeStringEqual } from '@/lib/timing-safe-equal';
 
 // Contract for Zapier's Action-step field mapping. This is the ACTUAL
 // key shape observed from a real production webhook call (snake_case,
@@ -78,7 +79,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Not configured' }, { status: 503 });
   }
 
-  if (request.headers.get('x-webhook-secret') !== process.env.BOLDTRAIL_WEBHOOK_SECRET) {
+  const providedSecret = request.headers.get('x-webhook-secret') ?? '';
+  if (!timingSafeStringEqual(providedSecret, process.env.BOLDTRAIL_WEBHOOK_SECRET)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -165,19 +167,23 @@ export async function POST(request: NextRequest) {
 
   const stage = payload.lead_status ? (STAGE_MAP[payload.lead_status] ?? 'new') : 'new';
 
-  const { error: leadError } = await supabaseAdmin.from('leads').insert({
-    contact_id: contactId,
-    stage,
-    score: parseQuality(payload.lead_score),
-    source_detail: 'boldtrail-zapier',
-    external_source: 'boldtrail',
-    external_id: externalId,
-    next_follow_up_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-    raw_payload: payload,
-  });
+  const { data: newLead, error: leadError } = await supabaseAdmin
+    .from('leads')
+    .insert({
+      contact_id: contactId,
+      stage,
+      score: parseQuality(payload.lead_score),
+      source_detail: 'boldtrail-zapier',
+      external_source: 'boldtrail',
+      external_id: externalId,
+      next_follow_up_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      raw_payload: payload,
+    })
+    .select('id')
+    .single();
 
-  if (leadError) {
-    return NextResponse.json({ error: leadError.message }, { status: 500 });
+  if (leadError || !newLead) {
+    return NextResponse.json({ error: leadError?.message ?? 'Insert failed' }, { status: 500 });
   }
 
   // Search context: BoldTrail's payload has no structured price/area/
@@ -227,7 +233,7 @@ export async function POST(request: NextRequest) {
         ai_generated: false,
       });
     })(),
-    notifyAgentOfNewLead(contactId),
+    notifyAgentOfNewLead(newLead.id),
   ]);
 
   const sendLabels = ['email', 'sms', 'agent notification'];

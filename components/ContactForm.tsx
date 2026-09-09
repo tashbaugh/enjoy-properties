@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
 import { captureUtmParams, buildSourceDetail, resolveContactSource } from '@/lib/utm';
 import { trackLeadConversion } from '@/lib/analytics';
 
@@ -46,40 +45,24 @@ export default function ContactForm({ source, contactType, sourceDetail, tags, s
     const effectiveContactType = showReasonSelect ? selectedReason!.contactType : contactType!;
     const effectiveTags = showReasonSelect ? (selectedReason!.tags ?? null) : (tags ?? null);
 
-    const { data: contact, error: contactError } = await supabase
-      .from('contacts')
-      .insert({
+    const res = await fetch('/api/leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         name: form.name,
         email: form.email,
         phone: form.phone,
         source: resolveContactSource(source),
-        contact_type: effectiveContactType,
+        contactType: effectiveContactType,
         tags: effectiveTags,
-      })
-      .select('id')
-      .single();
-
-    if (contactError || !contact) {
-      setStatus('error');
-      return;
-    }
-
-    const { error: leadError } = await supabase.from('leads').insert({
-      contact_id: contact.id,
-      stage: 'new',
-      source_detail: buildSourceDetail(sourceDetail),
+        sourceDetail: buildSourceDetail(sourceDetail),
+        formSource: 'contact',
+      }),
     });
 
-    setStatus(leadError ? 'error' : 'done');
-    if (!leadError) {
+    setStatus(res.ok ? 'done' : 'error');
+    if (res.ok) {
       trackLeadConversion(effectiveContactType);
-      // Fire-and-forget -- convenience notification to the agent, must
-      // never block or fail the visitor's own success state.
-      fetch('/api/notify-new-lead', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contactId: contact.id }),
-      }).catch(() => {});
     }
   }
 
