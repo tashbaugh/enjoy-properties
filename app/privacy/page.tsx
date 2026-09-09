@@ -1,13 +1,26 @@
 import type { Metadata } from 'next';
+import { JsonLd } from '@/components/JsonLd';
+import { breadcrumbJsonLd } from '@/lib/structured-data';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Enjoy Properties',
+  // Bare page name -- the root layout's title.template already appends
+  // "| Enjoy Properties"; keeping that suffix here too would double it.
+  title: 'Privacy Policy',
   description: 'How Tyler Ashbaugh, REALTOR® with Texas Premier Realty, LLC, collects, uses, and protects your information on enjoyproperties.us.',
+  alternates: {
+    canonical: '/privacy',
+  },
 };
 
 export default function Privacy() {
   return (
     <main className="bg-paper">
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: 'Home', path: '/' },
+          { name: 'Privacy Policy', path: '/privacy' },
+        ])}
+      />
       <div className="mx-auto max-w-3xl px-4 py-20 md:py-28">
         <h1 className="font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
           Privacy Policy

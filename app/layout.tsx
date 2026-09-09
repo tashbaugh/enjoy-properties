@@ -1,11 +1,47 @@
+import type { Metadata } from 'next';
 import Script from 'next/script';
 import { Inter, Fraunces } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { JsonLd } from '@/components/JsonLd';
+import { websiteJsonLd } from '@/lib/structured-data';
+import { SITE_URL, SITE_NAME, BASE_OPENGRAPH, BASE_TWITTER } from '@/lib/constants';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const fraunces = Fraunces({ subsets: ['latin'], variable: '--font-fraunces' });
+
+const SITE_DESCRIPTION =
+  'Buy, sell, rent, or invest in San Antonio real estate with Tyler Ashbaugh, REALTOR® with Texas Premier Realty — real market data, no hype.';
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    template: `%s | ${SITE_NAME}`,
+    default: `${SITE_NAME} | San Antonio Real Estate with Tyler Ashbaugh`,
+  },
+  description: SITE_DESCRIPTION,
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    ...BASE_OPENGRAPH,
+    url: SITE_URL,
+    title: `${SITE_NAME} | San Antonio Real Estate with Tyler Ashbaugh`,
+    description: SITE_DESCRIPTION,
+    // BASE_OPENGRAPH.images points at /opengraph-image explicitly --
+    // see the comment there. It does NOT duplicate the tag Next would
+    // auto-inject for this exact route (confirmed by rendering actual
+    // output): the file convention only auto-attaches when nothing in
+    // the resolved metadata already specifies `images`, so declaring it
+    // here replaces rather than adds to that auto-injection.
+  },
+  twitter: {
+    ...BASE_TWITTER,
+    title: `${SITE_NAME} | San Antonio Real Estate with Tyler Ashbaugh`,
+    description: SITE_DESCRIPTION,
+  },
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -48,6 +84,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         )}
       </head>
       <body>
+        {/* Site-wide, not homepage-only -- describes the site itself as
+        an entity, same on every route. RealEstateAgent (the person/
+        business) lives on the homepage instead, in app/page.tsx. */}
+        <JsonLd data={websiteJsonLd()} />
         <Header />
         {children}
         <Footer />

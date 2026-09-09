@@ -1,5 +1,45 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import ContactForm from '@/components/ContactForm';
+import { JsonLd } from '@/components/JsonLd';
+import { realEstateAgentJsonLd } from '@/lib/structured-data';
+import { BASE_OPENGRAPH, BASE_TWITTER } from '@/lib/constants';
+
+const SOCIAL_TITLE = 'San Antonio Real Estate, Done Right';
+const SOCIAL_DESCRIPTION =
+  "Buying, selling, renting, or listing a rental in San Antonio? Clear numbers, honest guidance, no pressure — from a REALTOR® with 22 years of engineering rigor.";
+
+// Covers the homepage's buy/sell/rent/list-a-rental sections -- these
+// are anchor-scrolled sections of this one page (#buy, #sell, #rent,
+// #list-rental), not separate routes, so there's no independent place
+// for e.g. "sell" to carry its own <title>/description.
+//
+// openGraph/twitter spread BASE_OPENGRAPH/BASE_TWITTER rather than
+// setting just title/description -- Next.js metadata merging is
+// shallow per nested object (App Router docs, "Merging"), so a page
+// that declares its own openGraph/twitter replaces the root layout's
+// entirely. Without the spread, this page would silently lose
+// og:site_name/type/locale and twitter:card (confirmed by rendering
+// actual output before this fix).
+export const metadata: Metadata = {
+  title: SOCIAL_TITLE,
+  description:
+    "Buying, selling, renting, or listing a rental in San Antonio? Tyler Ashbaugh brings 22 years of engineering rigor to real estate — clear numbers, honest guidance, no pressure.",
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    ...BASE_OPENGRAPH,
+    title: SOCIAL_TITLE,
+    description: SOCIAL_DESCRIPTION,
+    url: '/',
+  },
+  twitter: {
+    ...BASE_TWITTER,
+    title: SOCIAL_TITLE,
+    description: SOCIAL_DESCRIPTION,
+  },
+};
 
 const TRUST_POINTS = [
   '22 years of analytical, technical problem-solving — now applied to real estate',
@@ -10,6 +50,7 @@ const TRUST_POINTS = [
 export default function Home() {
   return (
     <main className="flex flex-col">
+      <JsonLd data={realEstateAgentJsonLd()} />
       {/* Buyer / general residential */}
       <section id="buy" className="scroll-mt-20 bg-paper">
         <div className="mx-auto grid max-w-6xl gap-12 px-4 py-20 md:grid-cols-2 md:items-center md:py-28">
