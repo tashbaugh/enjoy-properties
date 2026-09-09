@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { supabase } from '@/lib/supabase';
 import { captureUtmParams, buildSourceDetail, resolveContactSource } from '@/lib/utm';
 import { trackLeadConversion } from '@/lib/analytics';
 import {
@@ -160,45 +159,29 @@ export default function CashFlowCalculator() {
     e.preventDefault();
     setStatus('submitting');
 
-    const { data: contact, error: contactError } = await supabase
-      .from('contacts')
-      .insert({
+    const res = await fetch('/api/leads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         name: gateForm.name || 'Investor lead',
         email: gateForm.email,
         source: resolveContactSource('content'),
-        contact_type: 'investor',
+        contactType: 'investor',
         tags: ['calculator'],
-      })
-      .select('id')
-      .single();
-
-    if (contactError || !contact) {
-      setStatus('error');
-      return;
-    }
-
-    const { error: leadError } = await supabase.from('leads').insert({
-      contact_id: contact.id,
-      stage: 'new',
-      source_detail: buildSourceDetail('invest-page | calculator'),
-      calculator_inputs: inputs,
-      calculator_results: { freeTier, gated },
+        sourceDetail: buildSourceDetail('invest-page | calculator'),
+        calculatorInputs: inputs,
+        calculatorResults: { freeTier, gated },
+        formSource: 'calculator',
+      }),
     });
 
-    if (leadError) {
+    if (!res.ok) {
       setStatus('error');
       return;
     }
 
     trackLeadConversion('investor');
     setStatus('unlocked');
-    // Fire-and-forget -- convenience notification to the agent, must
-    // never block or fail the visitor's own unlocked state.
-    fetch('/api/notify-new-lead', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contactId: contact.id }),
-    }).catch(() => {});
   }
 
   const unlocked = status === 'unlocked';

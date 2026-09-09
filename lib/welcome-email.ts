@@ -17,7 +17,7 @@ export function buildWelcomeEmailHtml(params: {
   return `
     <p>Hi ${escapeHtml(params.firstName)},</p>
     <p>Thanks for searching homes on my site! I'm Tyler Ashbaugh, a San Antonio REALTOR&reg; with
-    Texas Premier Realty &mdash; I've also spent 20+ years as a software engineer, work I still do
+    Texas Premier Realty &mdash; I've also spent 22 years as a software engineer, work I still do
     alongside real estate, which comes in handy when it's time to dig into the numbers on a
     property.</p>
     <p>${escapeHtml(params.searchContextSentence)}</p>

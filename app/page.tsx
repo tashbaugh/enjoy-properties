@@ -2,7 +2,7 @@ import Image from 'next/image';
 import ContactForm from '@/components/ContactForm';
 
 const TRUST_POINTS = [
-  '20+ years of analytical, technical problem-solving — now applied to real estate',
+  '22 years of analytical, technical problem-solving — now applied to real estate',
   'Residential buyers, sellers & renters — San Antonio & surrounding areas',
   'Licensed Texas REALTOR® — TREC Lic. #833862-SA, held to the REALTOR® Code of Ethics',
 ];
@@ -32,7 +32,7 @@ export default function Home() {
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-ink-soft">
               I&apos;m Tyler Ashbaugh, a licensed Texas REALTOR® with Texas Premier Realty.
-              I&apos;ve also spent 20+ years as a software engineer — work I still do alongside
+              I&apos;ve also spent 22 years as a software engineer — work I still do alongside
               real estate — and I bring that same analytical, no-nonsense approach to helping
               you buy, sell, or lease in San Antonio. No pressure, no fluff, just clear numbers
               and honest guidance.

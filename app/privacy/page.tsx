@@ -15,7 +15,7 @@ export default function Privacy() {
         <p className="mt-4 text-sm text-ink-soft">
           Effective Date: August 30, 2026
           <br />
-          Last Updated: August 30, 2026
+          Last Updated: September 8, 2026
         </p>
 
         <p className="mt-8 leading-relaxed text-ink-soft">
@@ -88,7 +88,57 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="font-display text-xl font-semibold text-ink">4. How We Share Your Information</h2>
+            <h2 className="font-display text-xl font-semibold text-ink">4. Cookies &amp; Tracking Technologies</h2>
+            <p className="mt-3 leading-relaxed text-ink-soft">
+              We use a small number of third-party tracking technologies to measure how well our
+              advertising is working:
+            </p>
+            <ul className="mt-3 list-disc space-y-1 pl-5 leading-relaxed text-ink-soft">
+              <li>
+                <strong className="text-ink">Google Ads conversion tracking</strong> (Google&apos;s
+                gtag.js): when you submit a form on the Site, we let Google know a conversion
+                occurred and which ad campaign, if any, brought you here. This does not include
+                your name, email, or phone number.
+              </li>
+              <li>
+                <strong className="text-ink">Meta Pixel:</strong> similarly records that an
+                inquiry occurred when you submit a form, tagged only with a general category
+                (e.g., buyer, investor) so we can measure ad performance on Facebook and
+                Instagram. Meta may also use standard browser and device signals for its own
+                ad-matching purposes, under Meta&apos;s own data policy.
+              </li>
+            </ul>
+            <p className="mt-3 leading-relaxed text-ink-soft">
+              Both are only active on pages running an active ad campaign, and only once
+              we&apos;ve configured them &mdash; if we haven&apos;t, they don&apos;t load at all.
+            </p>
+            <p className="mt-3 leading-relaxed text-ink-soft">
+              <strong className="text-ink">Your choices:</strong> You can block or limit these
+              technologies through your browser&apos;s cookie and tracking settings,{' '}
+              <a
+                href="https://adssettings.google.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-gold"
+              >
+                Google&apos;s Ad Settings
+              </a>
+              , or{' '}
+              <a
+                href="https://www.facebook.com/adpreferences"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-gold"
+              >
+                Meta&apos;s Ad Preferences
+              </a>
+              . Blocking them doesn&apos;t affect your ability to use the Site or submit an
+              inquiry &mdash; it only affects how we measure ad performance.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-display text-xl font-semibold text-ink">5. How We Share Your Information</h2>
             <p className="mt-3 leading-relaxed text-ink-soft">
               We do not sell your personal information. We may share your information with:
             </p>
@@ -103,6 +153,19 @@ export default function Privacy() {
                 email delivery, SMS delivery, and hosting providers), solely for the purpose of
                 providing those services on our behalf
               </li>
+              <li>
+                <strong className="text-ink">Advertising platforms</strong> (Google Ads, Meta),
+                limited to the conversion tracking described in Section 4 above &mdash; we do not
+                send them your name, email, or phone number
+              </li>
+              <li>
+                <strong className="text-ink">AI tools</strong> we use to help draft personalized
+                follow-up messages. When you provide search details (e.g., price range, areas of
+                interest), we may share your first name and those search details with an AI
+                service to help draft relevant follow-up content &mdash; never your full name,
+                email, phone number, or any other information beyond what&apos;s needed for that
+                purpose
+              </li>
               <li>As required by law, or to protect our legal rights</li>
             </ul>
             <p className="mt-3 leading-relaxed text-ink-soft">
@@ -112,7 +175,7 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="font-display text-xl font-semibold text-ink">5. Data Storage &amp; Security</h2>
+            <h2 className="font-display text-xl font-semibold text-ink">6. Data Storage &amp; Security</h2>
             <p className="mt-3 leading-relaxed text-ink-soft">
               Your information is stored using industry-standard hosting and database providers.
               We take reasonable measures to protect your personal information, but no method of
@@ -121,16 +184,17 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="font-display text-xl font-semibold text-ink">6. Your Choices</h2>
+            <h2 className="font-display text-xl font-semibold text-ink">7. Your Choices</h2>
             <ul className="mt-3 list-disc space-y-1 pl-5 leading-relaxed text-ink-soft">
               <li>You may opt out of SMS communications at any time by replying STOP to any text message.</li>
               <li>You may opt out of email communications at any time by using the unsubscribe link included in our emails.</li>
+              <li>You may limit advertising cookies and tracking as described in Section 4.</li>
               <li>You may contact us directly (see below) to request that we delete or correct your information.</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="font-display text-xl font-semibold text-ink">7. Children&apos;s Privacy</h2>
+            <h2 className="font-display text-xl font-semibold text-ink">8. Children&apos;s Privacy</h2>
             <p className="mt-3 leading-relaxed text-ink-soft">
               The Site is not directed at individuals under 18, and we do not knowingly collect
               personal information from children.
@@ -138,7 +202,7 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="font-display text-xl font-semibold text-ink">8. Changes to This Policy</h2>
+            <h2 className="font-display text-xl font-semibold text-ink">9. Changes to This Policy</h2>
             <p className="mt-3 leading-relaxed text-ink-soft">
               We may update this Privacy Policy from time to time. Changes will be posted on this
               page with an updated effective date.
@@ -146,7 +210,7 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="font-display text-xl font-semibold text-ink">9. Contact Us</h2>
+            <h2 className="font-display text-xl font-semibold text-ink">10. Contact Us</h2>
             <p className="mt-3 leading-relaxed text-ink-soft">
               If you have questions about this Privacy Policy or how your information is used,
               contact:

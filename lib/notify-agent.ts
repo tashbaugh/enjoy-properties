@@ -13,40 +13,55 @@ function supabaseProjectRef(): string {
 }
 
 /**
- * Convenience layer, not critical path -- callers should not await this
- * on the user-facing success path. Only takes contactId (not leadId)
- * because neither client-side insert path can read a lead id back
- * (anon has insert-only RLS on `leads`); this looks up the contact's
- * most recent lead itself via the service-role client, which isn't
- * RLS-restricted.
+ * Callers should not await this on the user-facing success path.
+ * Takes a leadId, not a contactId -- notification is per lead, not per
+ * contact, so a past client who inquires again about a different
+ * property still gets a fresh alert instead of being silently
+ * swallowed by a contact-level idempotency check. Both call sites
+ * (app/api/leads, app/api/webhooks/boldtrail-lead) create the lead
+ * server-side, so the id is always available here now.
+ *
+ * Idempotent per lead: the update below only succeeds (returns a row)
+ * the first time it's called for a given lead id, since it's scoped to
+ * `notified_at is null` and every subsequent call finds it already
+ * set. Postgres re-evaluates the WHERE clause after acquiring the row
+ * lock, so concurrent calls for the same id can't both win -- this is
+ * what actually caps real sends to at most once per lead, not the
+ * caller-side rate limit in app/api/leads.
  */
-export async function notifyAgentOfNewLead(contactId: string): Promise<void> {
-  const { data: contact } = await supabaseAdmin
-    .from('contacts')
-    .select('name, email, phone, source, contact_type')
-    .eq('id', contactId)
-    .single();
+export async function notifyAgentOfNewLead(leadId: string): Promise<void> {
+  const { data: lead } = await supabaseAdmin
+    .from('leads')
+    .update({ notified_at: new Date().toISOString() })
+    .eq('id', leadId)
+    .is('notified_at', null)
+    .select('contact_id, source_detail, raw_payload')
+    .maybeSingle();
 
-  if (!contact) {
-    console.error(`notify-new-lead: no contact found for id ${contactId}`);
+  if (!lead) {
+    // Either no such lead, or it's already been notified -- no-op
+    // either way, not an error worth logging.
     return;
   }
 
-  const { data: lead } = await supabaseAdmin
-    .from('leads')
-    .select('source_detail, raw_payload')
-    .eq('contact_id', contactId)
-    .order('created_at', { ascending: false })
-    .limit(1)
+  const { data: contact } = await supabaseAdmin
+    .from('contacts')
+    .select('name, email, phone, source, contact_type')
+    .eq('id', lead.contact_id)
     .maybeSingle();
 
-  const rawPayload = lead?.raw_payload as Record<string, unknown> | null | undefined;
+  if (!contact) {
+    console.error(`notify-new-lead: no contact found for lead ${leadId}`);
+    return;
+  }
+
+  const rawPayload = lead.raw_payload as Record<string, unknown> | null | undefined;
   const boldTrailLink = typeof rawPayload?.lead_details_link === 'string' ? rawPayload.lead_details_link : null;
   const link = boldTrailLink ?? `https://supabase.com/dashboard/project/${supabaseProjectRef()}/editor`;
 
   const lines = [
     `New lead: ${contact.name}`,
-    `Source: ${contact.source}${lead?.source_detail ? ` — ${lead.source_detail}` : ''}`,
+    `Source: ${contact.source}${lead.source_detail ? ` — ${lead.source_detail}` : ''}`,
     `Type: ${contact.contact_type}`,
     `Email: ${contact.email}`,
     contact.phone ? `Phone: ${contact.phone}` : null,

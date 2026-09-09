@@ -1,4 +1,5 @@
-import { createHmac, timingSafeEqual } from 'crypto';
+import { createHmac } from 'crypto';
+import { timingSafeStringEqual } from '@/lib/timing-safe-equal';
 
 // Signed contact ID, not a raw ID -- prevents unsubscribing someone
 // else's email by guessing/incrementing an ID (spec §2.4).
@@ -15,10 +16,7 @@ export function verifyUnsubscribeToken(token: string): string | null {
   if (!contactId || !providedSig) return null;
 
   const expectedSig = sign(contactId);
-  const expected = Buffer.from(expectedSig);
-  const provided = Buffer.from(providedSig);
-
-  if (expected.length !== provided.length || !timingSafeEqual(expected, provided)) {
+  if (!timingSafeStringEqual(expectedSig, providedSig)) {
     return null;
   }
 
