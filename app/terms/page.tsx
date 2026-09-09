@@ -1,14 +1,27 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { JsonLd } from '@/components/JsonLd';
+import { breadcrumbJsonLd } from '@/lib/structured-data';
 
 export const metadata: Metadata = {
-  title: 'Terms and Conditions | Enjoy Properties',
+  // Bare page name -- the root layout's title.template already appends
+  // "| Enjoy Properties"; keeping that suffix here too would double it.
+  title: 'Terms and Conditions',
   description: 'Terms governing use of enjoyproperties.us, operated by Tyler Ashbaugh, REALTOR® with Texas Premier Realty, LLC.',
+  alternates: {
+    canonical: '/terms',
+  },
 };
 
 export default function Terms() {
   return (
     <main className="bg-paper">
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: 'Home', path: '/' },
+          { name: 'Terms and Conditions', path: '/terms' },
+        ])}
+      />
       <div className="mx-auto max-w-3xl px-4 py-20 md:py-28">
         <h1 className="font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
           Terms and Conditions
