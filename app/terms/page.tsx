@@ -29,13 +29,15 @@ export default function Terms() {
         <p className="mt-4 text-sm text-ink-soft">
           Effective Date: August 30, 2026
           <br />
-          Last Updated: August 30, 2026
+          Last Updated: September 10, 2026
         </p>
 
         <p className="mt-8 leading-relaxed text-ink-soft">
-          Welcome to enjoyproperties.us (the &quot;Site&quot;), operated by Tyler Ashbaugh, a
-          REALTOR® with Texas Premier Realty, LLC. By using this Site or communicating with us
-          through it, you agree to the following terms.
+          Welcome to enjoyproperties.us (the &quot;Site&quot;), operated by me, Tyler Ashbaugh. I
+          am a licensed Texas REALTOR® sales agent (TREC License #833862-SA), sponsored by Texas
+          Premier Realty, LLC (TREC Broker License #9014663-BB) &mdash; an independently
+          contracted relationship, not an employment or ownership one. By using this Site or
+          communicating with me through it, you agree to the following terms.
         </p>
 
         <div className="mt-10 space-y-10">
@@ -65,7 +67,7 @@ export default function Terms() {
           <section>
             <h2 className="font-display text-xl font-semibold text-ink">3. Communications (Email &amp; SMS)</h2>
             <p className="mt-3 leading-relaxed text-ink-soft">
-              By submitting your contact information through this Site, you agree that we may
+              By submitting your contact information through this Site, you agree that I may
               contact you by email or phone regarding your inquiry.
             </p>
             <p className="mt-3 leading-relaxed text-ink-soft">
@@ -74,10 +76,10 @@ export default function Terms() {
             <ul className="mt-3 list-disc space-y-1 pl-5 leading-relaxed text-ink-soft">
               <li>
                 Text messages will only be sent after you have provided your phone number and
-                affirmatively confirmed (by replying YES to our initial message) that you wish to
+                affirmatively confirmed (by replying YES to my initial message) that you wish to
                 receive SMS communications.
               </li>
-              <li>Message frequency varies based on your inquiry and our follow-up communication.</li>
+              <li>Message frequency varies based on your inquiry and my follow-up communication.</li>
               <li>Message and data rates may apply.</li>
               <li>
                 Reply <strong className="text-ink">STOP</strong> at any time to opt out of SMS
@@ -85,7 +87,7 @@ export default function Terms() {
               </li>
               <li>Carriers are not liable for delayed or undelivered messages.</li>
               <li>
-                See our{' '}
+                See my{' '}
                 <Link href="/privacy" className="underline hover:text-gold">
                   Privacy Policy
                 </Link>{' '}
@@ -108,7 +110,7 @@ export default function Terms() {
             <h2 className="font-display text-xl font-semibold text-ink">5. Fair Housing</h2>
             <p className="mt-3 leading-relaxed text-ink-soft">
               Tyler Ashbaugh and Texas Premier Realty, LLC are committed to compliance with the
-              Fair Housing Act and Texas fair housing laws. We do not discriminate on the basis of
+              Fair Housing Act and Texas fair housing laws. I do not discriminate on the basis of
               race, color, religion, sex, national origin, familial status, or disability in the
               provision of real estate services.
             </p>
@@ -136,7 +138,7 @@ export default function Terms() {
           <section>
             <h2 className="font-display text-xl font-semibold text-ink">8. Changes to These Terms</h2>
             <p className="mt-3 leading-relaxed text-ink-soft">
-              We may update these Terms and Conditions from time to time. Continued use of the
+              I may update these Terms and Conditions from time to time. Continued use of the
               Site after changes are posted constitutes acceptance of the updated terms.
             </p>
           </section>
