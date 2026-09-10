@@ -1,9 +1,9 @@
 # Terms and Conditions
 
 **Effective Date:** August 30, 2026
-**Last Updated:** August 30, 2026
+**Last Updated:** September 10, 2026
 
-Welcome to enjoyproperties.us (the "Site"), operated by Tyler Ashbaugh, a REALTOR® with Texas Premier Realty, LLC. By using this Site or communicating with us through it, you agree to the following terms.
+Welcome to enjoyproperties.us (the "Site"), operated by me, Tyler Ashbaugh. I am a licensed Texas REALTOR® sales agent (TREC License #833862-SA), sponsored by Texas Premier Realty, LLC (TREC Broker License #9014663-BB) — an independently contracted relationship, not an employment or ownership one. By using this Site or communicating with me through it, you agree to the following terms.
 
 ## 1. Use of the Site
 
@@ -15,15 +15,15 @@ Submitting a form on this Site does not, by itself, create a real estate brokera
 
 ## 3. Communications (Email & SMS)
 
-By submitting your contact information through this Site, you agree that we may contact you by email or phone regarding your inquiry.
+By submitting your contact information through this Site, you agree that I may contact you by email or phone regarding your inquiry.
 
 **SMS Terms:**
-- Text messages will only be sent after you have provided your phone number and affirmatively confirmed (by replying YES to our initial message) that you wish to receive SMS communications.
-- Message frequency varies based on your inquiry and our follow-up communication.
+- Text messages will only be sent after you have provided your phone number and affirmatively confirmed (by replying YES to my initial message) that you wish to receive SMS communications.
+- Message frequency varies based on your inquiry and my follow-up communication.
 - Message and data rates may apply.
 - Reply **STOP** at any time to opt out of SMS messages. Reply **HELP** for assistance.
 - Carriers are not liable for delayed or undelivered messages.
-- See our [Privacy Policy](/privacy) for details on how your mobile information is used and protected.
+- See my [Privacy Policy](/privacy) for details on how your mobile information is used and protected.
 
 ## 4. Broker Identification
 
@@ -31,7 +31,7 @@ Tyler Ashbaugh is a licensed Texas Real Estate Sales Agent (TREC License #833862
 
 ## 5. Fair Housing
 
-Tyler Ashbaugh and Texas Premier Realty, LLC are committed to compliance with the Fair Housing Act and Texas fair housing laws. We do not discriminate on the basis of race, color, religion, sex, national origin, familial status, or disability in the provision of real estate services.
+Tyler Ashbaugh and Texas Premier Realty, LLC are committed to compliance with the Fair Housing Act and Texas fair housing laws. I do not discriminate on the basis of race, color, religion, sex, national origin, familial status, or disability in the provision of real estate services.
 
 ## 6. Intellectual Property
 
@@ -43,7 +43,7 @@ This Site and its content are provided "as is" without warranties of any kind. T
 
 ## 8. Changes to These Terms
 
-We may update these Terms and Conditions from time to time. Continued use of the Site after changes are posted constitutes acceptance of the updated terms.
+I may update these Terms and Conditions from time to time. Continued use of the Site after changes are posted constitutes acceptance of the updated terms.
 
 ## 9. Governing Law
 
