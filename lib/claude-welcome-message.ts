@@ -3,8 +3,8 @@ import { z } from 'zod';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 
 // Fixed skeleton, Claude fills narrow slots only -- deliberate design
-// choice per docs/phase3-automation-spec.md §2.3. Never let this module
-// draft a full message; it only ever returns these two short strings.
+// choice. Never let this module draft a full message; it only ever
+// returns these two short strings.
 
 const SlotsSchema = z.object({
   search_context_sentence: z.string(),

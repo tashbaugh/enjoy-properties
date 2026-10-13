@@ -66,8 +66,7 @@ function parseHashtags(raw: string | undefined): string[] {
 }
 
 /** A BoldTrail Leadid of missing/empty/0 is a known test-record artifact
- * (docs/handoff-boldtrail-webhook.md) -- never trust it as a real
- * idempotency key. */
+ * -- never trust it as a real idempotency key. */
 function validLeadId(value: string | number | undefined): string | null {
   if (value === undefined || value === null) return null;
   const s = String(value).trim();
@@ -187,9 +186,9 @@ export async function POST(request: NextRequest) {
   }
 
   // Search context: BoldTrail's payload has no structured price/area/
-  // bedroom fields (hashtags aren't semantically parsed yet, per the
-  // handoff) -- this always resolves to the deterministic fallback
-  // sentence, no Claude call, until that changes.
+  // bedroom fields (hashtags aren't semantically parsed yet) -- this
+  // always resolves to the deterministic fallback sentence, no Claude
+  // call, until that changes.
   const { search_context_sentence } = await draftWelcomeMessageSlots({ firstName: firstName || 'there' });
 
   const sendResults = await Promise.allSettled([

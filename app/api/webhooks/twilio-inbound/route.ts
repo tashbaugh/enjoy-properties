@@ -9,8 +9,7 @@ import { normalizePhone } from '@/lib/phone';
 // Zapier, which doesn't sign its webhook calls.
 const STOP_KEYWORDS = new Set(['STOP', 'STOPALL', 'UNSUBSCRIBE', 'CANCEL', 'END', 'QUIT']);
 // Deliberately excludes "YES" -- that's this project's custom SMS
-// double-opt-in confirmation keyword (spec §2.4), handled separately
-// below. NOTE: "YES" is also one of Twilio's own default Advanced
+// double-opt-in confirmation keyword, handled separately below. NOTE: "YES" is also one of Twilio's own default Advanced
 // Opt-Out resubscribe keywords -- worth confirming directly against
 // Twilio's docs/support that this doesn't collide before relying on it
 // for a number that's ever had Advanced Opt-Out's STOP state on it.

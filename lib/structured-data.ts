@@ -4,8 +4,7 @@ import { SITE_URL, SITE_NAME } from '@/lib/constants';
 // its LocalBusiness/Organization/Thing ancestors, areaServed,
 // EducationalOccupationalCredential, WebSite, BreadcrumbList/ListItem,
 // PostalAddress) and against Google's own Search Central docs for
-// LocalBusiness and Breadcrumb rich results -- see the handoff notes for
-// exactly what was checked.
+// LocalBusiness and Breadcrumb rich results.
 //
 // `address` is Texas Premier Realty's public brokerage office (the
 // business location Tyler operates from as a sponsored agent), not a

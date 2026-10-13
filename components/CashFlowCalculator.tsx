@@ -143,7 +143,7 @@ export default function CashFlowCalculator() {
       })
       .catch(() => {
         // Network/API failure -- silently keep the static DEFAULT_INPUTS
-        // fallback already in INITIAL_FORM, per spec §6.
+        // fallback already in INITIAL_FORM.
       });
   }, []);
 

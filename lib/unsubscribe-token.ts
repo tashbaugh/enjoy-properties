@@ -2,7 +2,7 @@ import { createHmac } from 'crypto';
 import { timingSafeStringEqual } from '@/lib/timing-safe-equal';
 
 // Signed contact ID, not a raw ID -- prevents unsubscribing someone
-// else's email by guessing/incrementing an ID (spec §2.4).
+// else's email by guessing/incrementing an ID.
 function sign(contactId: string): string {
   return createHmac('sha256', process.env.UNSUBSCRIBE_SECRET!).update(contactId).digest('hex');
 }

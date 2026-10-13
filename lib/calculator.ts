@@ -1,6 +1,6 @@
 // Pure investor cash flow / cap rate calculations for the /invest lead
-// magnet. No React, no side effects — see docs/phase2-cashflow-calculator-spec.md
-// §3 for the formulas this implements.
+// magnet. No React, no side effects -- the formulas intentionally mirror
+// a written spec, not derived ad hoc.
 
 export type CalculatorInputs = {
   purchasePrice: number;

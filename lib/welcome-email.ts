@@ -1,11 +1,10 @@
 import { IABS_URL } from '@/lib/constants';
 import { buildUnsubscribeToken } from '@/lib/unsubscribe-token';
 
-// Fixed skeleton per docs/phase3-automation-spec.md §2.3 -- the IABS
-// line, physical address, and unsubscribe link are CAN-SPAM/TREC
-// requirements, not stylistic choices. Only searchContextSentence is
-// ever model-generated (see lib/claude-welcome-message.ts); everything
-// else here is static.
+// Fixed skeleton -- the IABS line, physical address, and unsubscribe
+// link are CAN-SPAM/TREC requirements, not stylistic choices. Only
+// searchContextSentence is ever model-generated (see
+// lib/claude-welcome-message.ts); everything else here is static.
 export function buildWelcomeEmailHtml(params: {
   firstName: string;
   contactId: string;
