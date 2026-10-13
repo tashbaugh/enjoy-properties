@@ -13,6 +13,10 @@ const SlotsSchema = z.object({
 
 export type WelcomeMessageSlots = z.infer<typeof SlotsSchema>;
 
+// Lets callers set ai_generated accurately on the interaction row they
+// write, instead of assuming every call reaches the model.
+export type WelcomeMessageResult = WelcomeMessageSlots & { source: 'model' | 'fallback' };
+
 export type LeadSearchContext = {
   firstName: string;
   priceMin?: number;
@@ -64,27 +68,40 @@ function describeContext(context: LeadSearchContext): string {
  */
 export async function draftWelcomeMessageSlots(
   context: LeadSearchContext
-): Promise<WelcomeMessageSlots> {
+): Promise<WelcomeMessageResult> {
   if (!hasUsableContext(context)) {
-    return FALLBACK_SLOTS;
+    return { ...FALLBACK_SLOTS, source: 'fallback' };
   }
 
   const client = new Anthropic();
 
-  const response = await client.messages.parse({
-    model: 'claude-opus-5',
-    max_tokens: 1024,
-    system: SYSTEM_PROMPT,
-    messages: [
-      {
-        role: 'user',
-        content: `Lead first name: ${context.firstName}\nSearch context: ${describeContext(context)}\n\nWrite:\n- search_context_sentence: one natural sentence for an email, referencing this search context\n- search_context_short: a ~10-word fragment for an SMS referencing the same context`,
+  try {
+    const response = await client.messages.parse({
+      model: 'claude-opus-5',
+      max_tokens: 1024,
+      system: SYSTEM_PROMPT,
+      messages: [
+        {
+          role: 'user',
+          content: `Lead first name: ${context.firstName}\nSearch context: ${describeContext(context)}\n\nWrite:\n- search_context_sentence: one natural sentence for an email, referencing this search context\n- search_context_short: a ~10-word fragment for an SMS referencing the same context`,
+        },
+      ],
+      output_config: {
+        format: zodOutputFormat(SlotsSchema),
       },
-    ],
-    output_config: {
-      format: zodOutputFormat(SlotsSchema),
-    },
-  });
+    });
 
-  return response.parsed_output ?? FALLBACK_SLOTS;
+    return response.parsed_output
+      ? { ...response.parsed_output, source: 'model' }
+      : { ...FALLBACK_SLOTS, source: 'fallback' };
+  } catch (err) {
+    // An Anthropic API error (outage, 429, or a spend limit returning
+    // HTTP 400 invalid_request_error) must never propagate -- this call
+    // sits between inserting the contact/lead rows and sending the
+    // welcome email/SMS/agent notification (see
+    // app/api/webhooks/boldtrail-lead), so an uncaught throw here would
+    // 500 the whole webhook after the lead is already recorded.
+    console.error('claude-welcome-message: model call failed, using fallback', err);
+    return { ...FALLBACK_SLOTS, source: 'fallback' };
+  }
 }

@@ -189,7 +189,9 @@ export async function POST(request: NextRequest) {
   // bedroom fields (hashtags aren't semantically parsed yet) -- this
   // always resolves to the deterministic fallback sentence, no Claude
   // call, until that changes.
-  const { search_context_sentence } = await draftWelcomeMessageSlots({ firstName: firstName || 'there' });
+  const { search_context_sentence, source: searchContextSource } = await draftWelcomeMessageSlots({
+    firstName: firstName || 'there',
+  });
 
   const sendResults = await Promise.allSettled([
     (async () => {
@@ -212,7 +214,7 @@ export async function POST(request: NextRequest) {
         channel: 'email',
         direction: 'outbound',
         content: subjectFor(firstName || 'there'),
-        ai_generated: true,
+        ai_generated: searchContextSource === 'model',
       });
     })(),
     (async () => {
