@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
+import { isAuthorizedCron } from '@/lib/cron-auth';
 
 // Vercel Cron sends this bearer token automatically on scheduled
 // invocations (see vercel.json) -- checking it stops the route from
 // being hit publicly to force-refresh or spam the FRED API.
-function isAuthorized(request: NextRequest): boolean {
-  const auth = request.headers.get('authorization');
-  return auth === `Bearer ${process.env.CRON_SECRET}`;
-}
 
 export async function GET(request: NextRequest) {
-  if (!isAuthorized(request)) {
+  if (!isAuthorizedCron(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
