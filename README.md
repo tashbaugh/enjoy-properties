@@ -8,7 +8,9 @@ Built and operated by [Tyler Ashbaugh](https://www.linkedin.com/in/tylerashbaugh
 
 ## What it does
 
-Captures buyer, seller, renter, and investor leads across several entry points; runs a cash-flow calculator behind an email gate; syncs leads bidirectionally with BoldTrail; and drives automated welcome email and SMS follow-up under strict regulatory constraints.
+Captures buyer, seller, renter, and investor leads across several entry points; runs a cash-flow calculator behind an email gate; ingests BoldTrail leads via a Zapier webhook; and drives automated welcome email and SMS follow-up under strict regulatory constraints.
+
+BoldTrail sync is one-way (BoldTrail → Zapier → webhook → Supabase) — leads created on this site aren't written back to BoldTrail. That gap is tracked, not yet built.
 
 ## Stack
 
@@ -24,6 +26,10 @@ npm test
 ```
 
 Requires Node 24.x, matching production, and a Supabase project with the migrations in `supabase/migrations/` applied.
+
+## Environment variables
+
+See [`.env.local.example`](.env.local.example) for the full list (names only — get real values from Tyler or the relevant provider console). Vercel holds the Production and Preview values; nothing here is checked in with a value.
 
 ---
 
@@ -84,7 +90,7 @@ Fair Housing applies to an automated welcome message the same way it applies to 
 
 ## Tests
 
-Vitest, covering `lib/calculator.ts` and `lib/unsubscribe-token.ts`, the two modules that are pure logic carrying real financial and security weight. Token tests cover tampered signatures, wrong-secret rejection, length mismatch in both directions, and malformed input, not just the round trip.
+Vitest, covering the pure-logic and server-only modules carrying real financial, security, or spend-control weight: calculator math, unsubscribe token signing, cron auth, HTML escaping, lead validation, Turnstile verification, the Claude welcome-message fallback, and notify-agent's escaping/rate-capping behavior. Token tests cover tampered signatures, wrong-secret rejection, length mismatch in both directions, and malformed input, not just the round trip.
 
 No component-level tests yet. That's a gap, not a decision.
 

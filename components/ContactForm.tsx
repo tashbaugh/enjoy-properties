@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { captureUtmParams, buildSourceDetail, resolveContactSource } from '@/lib/utm';
 import { trackLeadConversion } from '@/lib/analytics';
+import Turnstile from '@/components/Turnstile';
 
 type ContactType = 'buyer' | 'seller' | 'investor' | 'past_client';
 
@@ -32,6 +33,7 @@ const REASON_OPTIONS: { value: string; label: string; contactType: ContactType; 
 export default function ContactForm({ source, contactType, sourceDetail, tags, showReasonSelect }: Props) {
   const [form, setForm] = useState({ name: '', email: '', phone: '', reason: '' });
   const [status, setStatus] = useState<'idle' | 'submitting' | 'done' | 'error'>('idle');
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   useEffect(() => {
     captureUtmParams();
@@ -57,6 +59,7 @@ export default function ContactForm({ source, contactType, sourceDetail, tags, s
         tags: effectiveTags,
         sourceDetail: buildSourceDetail(sourceDetail),
         formSource: 'contact',
+        turnstileToken,
       }),
     });
 
@@ -137,8 +140,9 @@ export default function ContactForm({ source, contactType, sourceDetail, tags, s
         <Link href="/privacy" className="underline hover:text-gold">Privacy Policy</Link> and{' '}
         <Link href="/terms" className="underline hover:text-gold">Terms</Link>.
       </p>
+      <Turnstile onVerify={setTurnstileToken} />
       <button
-        disabled={status === 'submitting'}
+        disabled={status === 'submitting' || (!!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !turnstileToken)}
         className="mt-2 w-full rounded-lg bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-gold disabled:cursor-not-allowed disabled:opacity-50"
       >
         {status === 'submitting' ? 'Sending...' : 'Get in touch'}

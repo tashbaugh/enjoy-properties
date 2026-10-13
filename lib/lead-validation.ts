@@ -40,6 +40,7 @@ export const LeadRequestSchema = z.object({
     message: 'calculatorResults exceeds size limit',
   }),
   formSource: z.enum(['contact', 'calculator']),
+  turnstileToken: z.string().min(1),
 });
 
 export type LeadRequestBody = z.infer<typeof LeadRequestSchema>;

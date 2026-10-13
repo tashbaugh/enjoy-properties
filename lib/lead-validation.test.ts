@@ -10,6 +10,7 @@ function baseBody(overrides: Record<string, unknown> = {}) {
     contactType: 'buyer',
     sourceDetail: 'landing-page',
     formSource: 'contact',
+    turnstileToken: 'valid-turnstile-token',
     ...overrides,
   };
 }
@@ -128,6 +129,16 @@ describe('LeadRequestSchema -- rejects malicious/oversized input', () => {
 
   it('rejects an empty name', () => {
     const result = LeadRequestSchema.safeParse(baseBody({ name: '   ' }));
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a missing turnstileToken', () => {
+    const { turnstileToken, ...rest } = baseBody();
+    expect(LeadRequestSchema.safeParse(rest).success).toBe(false);
+  });
+
+  it('rejects an empty turnstileToken', () => {
+    const result = LeadRequestSchema.safeParse(baseBody({ turnstileToken: '' }));
     expect(result.success).toBe(false);
   });
 

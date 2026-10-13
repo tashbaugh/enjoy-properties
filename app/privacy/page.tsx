@@ -106,8 +106,8 @@ export default function Privacy() {
           <section>
             <h2 className="font-display text-xl font-semibold text-ink">4. Cookies &amp; Tracking Technologies</h2>
             <p className="mt-3 leading-relaxed text-ink-soft">
-              I use a small number of third-party tracking technologies to measure how well my
-              advertising is working:
+              I use a small number of third-party technologies on the Site, for advertising
+              measurement and for spam prevention:
             </p>
             <ul className="mt-3 list-disc space-y-1 pl-5 leading-relaxed text-ink-soft">
               <li>
@@ -123,10 +123,20 @@ export default function Privacy() {
                 Instagram. Meta may also use standard browser and device signals for its own
                 ad-matching purposes, under Meta&apos;s own data policy.
               </li>
+              <li>
+                <strong className="text-ink">Cloudflare Turnstile:</strong> a bot-detection
+                check that runs when you submit a form on the Site, to keep automated spam out
+                of my lead inbox. It is not used for advertising. Cloudflare may use standard
+                browser and device signals to distinguish humans from bots, under
+                Cloudflare&apos;s own privacy policy.
+              </li>
             </ul>
             <p className="mt-3 leading-relaxed text-ink-soft">
-              Both are only active on pages running an active ad campaign, and only once
-              I&apos;ve configured them &mdash; if I haven&apos;t, they don&apos;t load at all.
+              Google Ads conversion tracking and the Meta Pixel are only active on pages running
+              an active ad campaign, and only once I&apos;ve configured them &mdash; if I
+              haven&apos;t, they don&apos;t load at all. Cloudflare Turnstile runs on every form
+              submission regardless of ad campaigns, since it protects against spam rather than
+              measuring advertising.
             </p>
             <p className="mt-3 leading-relaxed text-ink-soft">
               <strong className="text-ink">Your choices:</strong> You can block or limit these

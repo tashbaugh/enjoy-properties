@@ -82,6 +82,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             `}
           </Script>
         )}
+
+        {/* Cloudflare Turnstile — loaded once site-wide; components/Turnstile.tsx
+        renders the per-form widget against window.turnstile. Omitted
+        entirely until NEXT_PUBLIC_TURNSTILE_SITE_KEY is set. */}
+        {process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && (
+          <Script
+            src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+            strategy="afterInteractive"
+          />
+        )}
       </head>
       <body>
         {/* Site-wide, not homepage-only -- describes the site itself as

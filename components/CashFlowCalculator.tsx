@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { captureUtmParams, buildSourceDetail, resolveContactSource } from '@/lib/utm';
 import { trackLeadConversion } from '@/lib/analytics';
+import Turnstile from '@/components/Turnstile';
 import {
   DEFAULT_INPUTS,
   calculateFreeTierResults,
@@ -121,6 +122,7 @@ export default function CashFlowCalculator() {
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [gateForm, setGateForm] = useState({ name: '', email: '' });
   const [status, setStatus] = useState<'idle' | 'submitting' | 'unlocked' | 'error'>('idle');
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   // True once the visitor touches the interest rate field themselves --
   // guards the /api/mortgage-rate fetch below from clobbering an edit
@@ -172,6 +174,7 @@ export default function CashFlowCalculator() {
         calculatorInputs: inputs,
         calculatorResults: { freeTier, gated },
         formSource: 'calculator',
+        turnstileToken,
       }),
     });
 
@@ -341,8 +344,12 @@ export default function CashFlowCalculator() {
               onChange={(e) => setGateForm((f) => ({ ...f, email: e.target.value }))}
             />
           </div>
+          <Turnstile onVerify={setTurnstileToken} />
           <button
-            disabled={status === 'submitting'}
+            disabled={
+              status === 'submitting' ||
+              (!!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !turnstileToken)
+            }
             className="mt-4 w-full rounded-lg bg-ink px-5 py-3 text-sm font-semibold text-paper transition hover:bg-gold disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             {status === 'submitting' ? 'Unlocking...' : 'Show me the full breakdown'}

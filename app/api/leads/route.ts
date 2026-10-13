@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 import { notifyAgentOfNewLead } from '@/lib/notify-agent';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { LeadRequestSchema, type LeadRequestBody } from '@/lib/lead-validation';
+import { verifyTurnstileToken } from '@/lib/turnstile';
 
 // Reject before JSON.parse even looks at the body -- a few hundred bytes
 // of real form data vs. an attacker sending megabytes to burn CPU/memory
@@ -58,8 +59,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
   const body = parsed.data;
-
   const ip = clientIp(request);
+
+  const turnstileResult = await verifyTurnstileToken(body.turnstileToken, ip);
+  if (!turnstileResult.ok) {
+    return NextResponse.json({ error: 'Turnstile verification failed' }, { status: turnstileResult.status });
+  }
+
   const allowed = await checkRateLimit(`leads:${body.formSource}:${ip}`, RATE_LIMITS[body.formSource], 60 * 60);
   if (!allowed) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
