@@ -13,6 +13,15 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  // rate_limit_hits otherwise only prunes the bucket being actively
+  // checked -- a bucket nobody hits again (e.g. an IP that never comes
+  // back) would accumulate forever. This cron is the one guaranteed
+  // daily touchpoint to sweep those out.
+  await supabaseAdmin
+    .from('rate_limit_hits')
+    .delete()
+    .lt('created_at', new Date(Date.now() - 24 * 3600 * 1000).toISOString());
+
   const { data: dueLeads, error } = await supabaseAdmin
     .from('leads')
     .select('id, stage, created_at, next_follow_up_at, contacts(name, email, phone)')

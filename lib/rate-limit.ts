@@ -11,6 +11,12 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
  * for this project's threat model (a public lead-gen site, not a
  * high-concurrency API), especially since the real backstop against
  * unbounded spend is notify-agent's per-lead idempotency, not this.
+ *
+ * Deliberately fails open on a DB error (an undefined `count` reads as
+ * 0, so the request passes) -- dropping a real lead because Supabase
+ * had a blip is worse than letting a rate-limit check miss once. The
+ * global per-hour cap in notify-agent is the backstop against that
+ * same failure mode actually being exploited.
  */
 export async function checkRateLimit(
   bucket: string,
