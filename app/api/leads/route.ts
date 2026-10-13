@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { notifyAgentOfNewLead } from '@/lib/notify-agent';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { LeadRequestSchema, type LeadRequestBody } from '@/lib/lead-validation';
+
+// Reject before JSON.parse even looks at the body -- a few hundred bytes
+// of real form data vs. an attacker sending megabytes to burn CPU/memory
+// parsing something that's about to fail validation anyway.
+const MAX_BODY_BYTES = 32 * 1024;
 
 // Replaces the old client-side (browser -> Supabase anon key) insert
 // path for ContactForm/CashFlowCalculator, and the standalone
@@ -13,54 +19,20 @@ import { checkRateLimit } from '@/lib/rate-limit';
 // grant anon any access at all as a result (see the
 // lock_down_contacts_leads_anon_access migration).
 
-type ContactType = 'buyer' | 'seller' | 'investor' | 'past_client';
-type ContactSource = 'public_record' | 'referral' | 'content' | 'ad';
-
-type FormSource = 'contact' | 'calculator';
-
-type LeadRequestBody = {
-  name: string;
-  email: string;
-  phone?: string | null;
-  source: ContactSource;
-  contactType: ContactType;
-  tags?: string[] | null;
-  sourceDetail: string;
-  calculatorInputs?: unknown;
-  calculatorResults?: unknown;
-  // Rate-limit bucket discriminator, not stored -- keeps the two forms
-  // from sharing one ceiling, since a burst on one (e.g. an open house
-  // full of visitors unlocking the calculator on shared wifi) shouldn't
-  // eat the other's headroom, and they warrant different limits.
-  formSource: FormSource;
-};
-
-const VALID_SOURCES = new Set<ContactSource>(['public_record', 'referral', 'content', 'ad']);
-const VALID_CONTACT_TYPES = new Set<ContactType>(['buyer', 'seller', 'investor', 'past_client']);
-const EMAIL_PATTERN = /^\S+@\S+\.\S+$/;
-
+// Rate-limit bucket discriminator, not stored -- keeps the two forms
+// from sharing one ceiling, since a burst on one (e.g. an open house
+// full of visitors unlocking the calculator on shared wifi) shouldn't
+// eat the other's headroom, and they warrant different limits.
+//
 // Per-IP requests/hour. Every accepted request creates a real
 // contact/lead row and triggers one Resend email + one Twilio SMS to
 // Tyler, so this bounds real spend directly -- sized to stop a
 // scripted loop, not to throttle a household or an open house sharing
 // one IP (carrier-grade NAT, corporate wifi).
-const RATE_LIMITS: Record<FormSource, number> = {
+const RATE_LIMITS: Record<LeadRequestBody['formSource'], number> = {
   contact: 15,
   calculator: 5,
 };
-
-function isValidBody(body: unknown): body is LeadRequestBody {
-  if (typeof body !== 'object' || body === null) return false;
-  const b = body as Record<string, unknown>;
-  return (
-    typeof b.name === 'string' && b.name.trim().length > 0 &&
-    typeof b.email === 'string' && EMAIL_PATTERN.test(b.email) &&
-    typeof b.source === 'string' && VALID_SOURCES.has(b.source as ContactSource) &&
-    typeof b.contactType === 'string' && VALID_CONTACT_TYPES.has(b.contactType as ContactType) &&
-    typeof b.sourceDetail === 'string' && b.sourceDetail.trim().length > 0 &&
-    (b.formSource === 'contact' || b.formSource === 'calculator')
-  );
-}
 
 function clientIp(request: NextRequest): string {
   const forwarded = request.headers.get('x-forwarded-for');
@@ -69,11 +41,23 @@ function clientIp(request: NextRequest): string {
 }
 
 export async function POST(request: NextRequest) {
-  const body: unknown = await request.json().catch(() => null);
+  const rawBody = await request.text().catch(() => '');
+  if (new TextEncoder().encode(rawBody).length > MAX_BODY_BYTES) {
+    return NextResponse.json({ error: 'Request body too large' }, { status: 413 });
+  }
 
-  if (!isValidBody(body)) {
+  let json: unknown;
+  try {
+    json = JSON.parse(rawBody);
+  } catch {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
+
+  const parsed = LeadRequestSchema.safeParse(json);
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+  }
+  const body = parsed.data;
 
   const ip = clientIp(request);
   const allowed = await checkRateLimit(`leads:${body.formSource}:${ip}`, RATE_LIMITS[body.formSource], 60 * 60);

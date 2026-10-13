@@ -1,5 +1,6 @@
 import { IABS_URL } from '@/lib/constants';
 import { buildUnsubscribeToken } from '@/lib/unsubscribe-token';
+import { escapeHtml } from '@/lib/html';
 
 // Fixed skeleton -- the IABS line, physical address, and unsubscribe
 // link are CAN-SPAM/TREC requirements, not stylistic choices. Only
@@ -38,17 +39,4 @@ export function buildWelcomeEmailHtml(params: {
 
 export function subjectFor(firstName: string): string {
   return `Welcome, ${firstName} — let's find your next home in San Antonio`;
-}
-
-function escapeHtml(text: string): string {
-  return text.replace(/[<>&'"]/g, (c) => {
-    switch (c) {
-      case '<': return '&lt;';
-      case '>': return '&gt;';
-      case '&': return '&amp;';
-      case "'": return '&#39;';
-      case '"': return '&quot;';
-      default: return c;
-    }
-  });
 }

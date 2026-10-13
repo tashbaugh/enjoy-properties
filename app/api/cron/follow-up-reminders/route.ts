@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { sendEmail } from '@/lib/resend';
 import { isAuthorizedCron } from '@/lib/cron-auth';
+import { escapeHtml } from '@/lib/html';
 
 function daysSince(iso: string): number {
   return Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24));
@@ -30,10 +31,10 @@ export async function GET(request: NextRequest) {
     .map((lead) => {
       const contact = Array.isArray(lead.contacts) ? lead.contacts[0] : lead.contacts;
       return `<tr>
-        <td>${contact?.name ?? 'Unknown'}</td>
-        <td>${contact?.email ?? ''}</td>
-        <td>${contact?.phone ?? ''}</td>
-        <td>${lead.stage}</td>
+        <td>${escapeHtml(contact?.name ?? 'Unknown')}</td>
+        <td>${escapeHtml(contact?.email ?? '')}</td>
+        <td>${escapeHtml(contact?.phone ?? '')}</td>
+        <td>${escapeHtml(lead.stage)}</td>
         <td>${daysSince(lead.created_at)} days</td>
       </tr>`;
     })
