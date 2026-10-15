@@ -80,6 +80,26 @@ describe('notifyAgentOfNewLead -- HTML escaping (B2)', () => {
   });
 });
 
+describe('notifyAgentOfNewLead -- real DB error on the claim update is logged, not swallowed', () => {
+  it('logs and returns without sending when the claim update itself errors', async () => {
+    fromMock.mockImplementation((table: string) => {
+      if (table === 'contacts') return chainMock({ data: CONTACT_ROW });
+      return chainMock({ data: null, error: { message: 'column leads.notified_at does not exist' } });
+    });
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    await notifyAgentOfNewLead('lead-1');
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.stringContaining('claim update failed'),
+      expect.objectContaining({ message: 'column leads.notified_at does not exist' })
+    );
+    expect(sendEmailMock).not.toHaveBeenCalled();
+    expect(sendSmsMock).not.toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
+});
+
 describe('notifyAgentOfNewLead -- SMS name truncation (B2)', () => {
   it('truncates an oversized name in the SMS body but not the email HTML', async () => {
     const longName = 'A'.repeat(100);

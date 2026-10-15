@@ -39,13 +39,18 @@ function supabaseProjectRef(): string {
  * caller-side rate limit in app/api/leads.
  */
 export async function notifyAgentOfNewLead(leadId: string): Promise<void> {
-  const { data: lead } = await supabaseAdmin
+  const { data: lead, error: claimError } = await supabaseAdmin
     .from('leads')
     .update({ notified_at: new Date().toISOString() })
     .eq('id', leadId)
     .is('notified_at', null)
     .select('contact_id, source_detail, raw_payload')
     .maybeSingle();
+
+  if (claimError) {
+    console.error('notify-new-lead: claim update failed', claimError);
+    return;
+  }
 
   if (!lead) {
     // Either no such lead, or it's already been notified -- no-op
