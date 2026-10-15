@@ -92,3 +92,23 @@ export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
     })),
   };
 }
+
+// Google's documented FAQPage shape (mainEntity -> Question ->
+// acceptedAnswer -> Answer). The items passed in must match what's
+// actually rendered visibly on the page -- Google's guidelines require
+// FAQPage structured data to reflect real, visible on-page content, not
+// hidden/supplementary text.
+export function faqJsonLd(items: { question: string; answer: string }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  };
+}

@@ -1,0 +1,21 @@
+# Enjoy Properties
+
+> San Antonio, TX real estate practice run by Tyler Ashbaugh, a licensed Texas REALTOR® (TREC Lic. #833862-SA) with Texas Premier Realty, LLC, and a software engineer of 22 years.
+
+Enjoy Properties (enjoyproperties.us) helps buyers, sellers, renters, landlords, and real estate investors in San Antonio and the surrounding area. Tyler brings 22 years of software engineering rigor to real estate: clear numbers, honest projections, no hype.
+
+## Pages
+
+- [Home](https://www.enjoyproperties.us/): buying, selling, and renting entry points.
+- [Invest](https://www.enjoyproperties.us/invest): investment property cash flow and cap rate calculator.
+- [FAQ](https://www.enjoyproperties.us/faq): common questions about working with Tyler and the site.
+- [Contact](https://www.enjoyproperties.us/contact): get in touch.
+
+## About Tyler Ashbaugh
+
+Licensed Texas REALTOR® with Texas Premier Realty, LLC (TREC Lic. #833862-SA), serving San Antonio, TX and surrounding areas. 22 years of professional software engineering experience, applied to real estate analysis and client service.
+
+## Contact
+
+Phone: (210) 419-2016
+Site: https://www.enjoyproperties.us

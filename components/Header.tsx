@@ -6,6 +6,7 @@ const NAV_LINKS = [
   { href: '/#rent', label: 'Rent' },
   { href: '/#list-rental', label: 'List a Rental' },
   { href: '/invest', label: 'Invest' },
+  { href: '/faq', label: 'FAQ' },
 ];
 
 const BOLDTRAIL_SEARCH_URL = 'https://tylerashbaugh.texaspremierrealty.com/';
