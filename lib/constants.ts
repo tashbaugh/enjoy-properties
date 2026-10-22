@@ -4,6 +4,11 @@
 // email), per the TREC IABS requirement.
 export const IABS_URL = 'https://tprofficeinfo.com/wp-content/uploads/2026/01/2026-IABS-Updated.pdf';
 
+// Single source of truth -- TPR's own hosted copy, so this stays current
+// whenever they update the form. Required on a license holder's website
+// per TREC's Consumer Protection Notice rule.
+export const CONSUMER_PROTECTION_URL = 'https://tprofficeinfo.com/wp-content/uploads/2023/12/Consumer-Protection-Notice.pdf';
+
 // Canonical production origin -- used for metadataBase (app/layout.tsx),
 // robots.ts, and sitemap.ts, so the domain lives in exactly one place.
 export const SITE_URL = 'https://www.enjoyproperties.us';

@@ -84,7 +84,7 @@ Fair Housing applies to an automated welcome message the same way it applies to 
 - Welcome emails are gated on `BROKERAGE_PHYSICAL_ADDRESS` being set. If it's missing the send is skipped and logged as an error, never sent without the CAN-SPAM required address.
 - SMS uses double opt-in that's stricter than required. Even when a lead source carries its own consent checkbox, `sms_consent` stays false until the contact replies YES to a dedicated opt-in text, verified against Twilio's request signature. The flag is captured now and will gate the follow-up SMS sequence, which isn't built yet: the consent model was designed before the feature that needs it.
 - `STOP` and `START` set `sms_opted_out` per contact, checked before every outbound send. `HELP` triggers an informational reply and stores no state.
-- TREC brokerage identification, the IABS link, and the Fair Housing notice render site-wide via the root layout, including the default 404 page.
+- TREC brokerage identification, the IABS link, the Consumer Protection Notice link, and the Fair Housing notice render site-wide via the root layout, including the default 404 page.
 
 ---
 

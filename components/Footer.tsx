@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { IABS_URL } from '@/lib/constants';
+import { IABS_URL, CONSUMER_PROTECTION_URL } from '@/lib/constants';
 
 function EqualHousingIcon() {
   return (
@@ -62,7 +62,7 @@ export default function Footer() {
             Tyler Ashbaugh, REALTOR® | Texas Premier Realty, LLC | TREC Lic. #833862-SA
           </p>
         </div>
-        <p className="mt-2 text-center text-xs text-paper/60">
+        <div className="mt-2 flex flex-col items-center gap-1 text-center text-xs text-paper/60">
           <a
             href={IABS_URL}
             target="_blank"
@@ -71,7 +71,15 @@ export default function Footer() {
           >
             Texas Real Estate Commission Information About Brokerage Services
           </a>
-        </p>
+          <a
+            href={CONSUMER_PROTECTION_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-gold"
+          >
+            Texas Real Estate Commission Consumer Protection Notice
+          </a>
+        </div>
         <div className="mt-3 flex flex-col items-center justify-center gap-1.5 text-center sm:flex-row sm:gap-2">
           <EqualHousingIcon />
           <p className="text-xs text-paper/60">
