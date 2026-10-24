@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { BOLDTRAIL_SEARCH_URL, BOLDTRAIL_RENTALS_URL } from '@/lib/constants';
 
 const NAV_LINKS = [
   { href: '/#buy', label: 'Buy' },
@@ -8,8 +9,6 @@ const NAV_LINKS = [
   { href: '/invest', label: 'Invest' },
   { href: '/faq', label: 'FAQ' },
 ];
-
-const BOLDTRAIL_SEARCH_URL = 'https://tylerashbaugh.texaspremierrealty.com/';
 
 export default function Header() {
   return (
@@ -31,6 +30,14 @@ export default function Header() {
             className="transition hover:text-ink"
           >
             Search Homes
+          </a>
+          <a
+            href={BOLDTRAIL_RENTALS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition hover:text-ink"
+          >
+            Search Rentals
           </a>
         </nav>
         <Link

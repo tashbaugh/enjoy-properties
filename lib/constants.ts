@@ -9,6 +9,15 @@ export const IABS_URL = 'https://tprofficeinfo.com/wp-content/uploads/2026/01/20
 // per TREC's Consumer Protection Notice rule.
 export const CONSUMER_PROTECTION_URL = 'https://tprofficeinfo.com/wp-content/uploads/2023/12/Consumer-Protection-Notice.pdf';
 
+// Tyler's BoldTrail IDX site -- used by the header's "Search Homes" /
+// "Search Rentals" links.
+export const BOLDTRAIL_SEARCH_URL = 'https://tylerashbaugh.texaspremierrealty.com/';
+
+// Pre-filtered BoldTrail rentals search for the San Antonio / New
+// Braunfels metro. Kept exactly as generated/tested -- do not
+// re-encode, reorder params, or otherwise "clean up" this string.
+export const BOLDTRAIL_RENTALS_URL = 'https://tylerashbaugh.texaspremierrealty.com/index.php?advanced=1&display=San+Antonio-New+Braunfels&min=0&max=100000000&beds=0&baths=0&types%5B%5D=32&statuses%5B%5D=0&minfootage=0&maxfootage=30000&minacres=0&maxacres=0&yearbuilt=0&maxyearbuilt=0&walkscore=0&keywords=&pak=metropolitan+area%3Ag50_9v1zkm24&sortby=listings.price+ASC&rtype=map';
+
 // Canonical production origin -- used for metadataBase (app/layout.tsx),
 // robots.ts, and sitemap.ts, so the domain lives in exactly one place.
 export const SITE_URL = 'https://www.enjoyproperties.us';
